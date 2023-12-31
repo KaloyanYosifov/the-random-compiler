@@ -13,6 +13,19 @@ pub enum Operator {
     DIV,
 }
 
+impl Display for Operator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let to_display = match self {
+            Self::PLUS => "+".to_owned(),
+            Self::MINUS => "-".to_owned(),
+            Self::MUL => "*".to_owned(),
+            Self::DIV => "/".to_owned(),
+        };
+
+        write!(f, "{}", to_display)
+    }
+}
+
 #[derive(Debug)]
 pub enum Token {
     IDENTIFIER(String),
@@ -24,6 +37,7 @@ pub enum Token {
     RCURLY,
     SEMI,
     ASSIGNMENT,
+    ERROR(String),
 }
 
 impl Display for Token {
@@ -36,24 +50,40 @@ impl Display for Token {
             Self::RPAREN => ")".to_owned(),
             Self::LCURLY => "{".to_owned(),
             Self::RCURLY => "}".to_owned(),
-            Self::SEMI => "SEMI".to_owned(),
-            Self::ASSIGNMENT => "ASSIGNMENT".to_owned(),
+            Self::SEMI => ";".to_owned(),
+            Self::ASSIGNMENT => "=".to_owned(),
+            Self::ERROR(error) => format!("Failed to convert to token: {}", error),
         };
 
         write!(f, "{}", to_display)
     }
 }
 
-impl Display for Operator {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let to_display = match self {
-            Self::PLUS => "+".to_owned(),
-            Self::MINUS => "-".to_owned(),
-            Self::MUL => "*".to_owned(),
-            Self::DIV => "/".to_owned(),
-        };
+impl From<char> for Token {
+    fn from(c: char) -> Self {
+        match c {
+            ';' => Token::SEMI,
+            '(' => Token::LPAREN,
+            ')' => Token::RPAREN,
+            '{' => Token::LCURLY,
+            '}' => Token::RCURLY,
+            '=' => Token::ASSIGNMENT,
+            _ => Token::ERROR(format!(
+                "Failed to parse character to a token: {}",
+                c.to_string()
+            )),
+        }
+    }
+}
 
-        write!(f, "{}", to_display)
+impl From<String> for Token {
+    fn from(word: String) -> Self {
+        // TODO: Implement grammar (For now we do simple stuff)
+
+        match word.as_str() {
+            word @ ("if" | "elif" | "else" | "while" | "for") => Token::KEYWORD(word.to_owned()),
+            _ => Token::ERROR(format!("Failed to convert word to token: {}", word)),
+        }
     }
 }
 
@@ -112,41 +142,44 @@ impl<T: AsRef<[u8]>> Lexer<T> {
 
     pub fn next(&mut self) -> TokenInfo {
         if let Some(iterator) = &mut self.current_line_iterator {
-            if let Some(char) = iterator.next() {
+            let mut peekable_iter = iterator.peekable();
+            if peekable_iter.peek().is_none() {
+                self.read_next_line();
+
+                return self.next();
+            }
+
+            let mut word = String::from("");
+            let start_column = self.column + 1;
+
+            for char in peekable_iter {
                 self.column += 1;
 
-                let start_column = self.column;
-                let mut word = String::from("");
-
-                if char != ' ' && char != '\n' {
-                    word.push(char);
-                }
-
-                for char in iterator {
-                    self.column += 1;
-
-                    match char {
-                        ' ' | '\n' => {
+                match char {
+                    ' ' | '\n' => {
+                        if word.len() > 0 {
                             break;
                         }
-                        c @ (';' | '(' | ')' | '{' | '}') => {
-                            word.push(c);
-                            break;
-                        }
-                        c => word.push(c),
-                    };
-                }
 
-                return TokenInfo {
-                    line: self.line,
-                    start_column,
-                    token: Token::SEMI,
+                        continue;
+                    }
+                    c @ (';' | '(' | ')' | '{' | '}' | '=') => {
+                        // TODO: add check to peek next character to see if we have another =
+                        return TokenInfo {
+                            line: self.line,
+                            start_column,
+                            token: c.into(),
+                        };
+                    }
+                    c => word.push(c),
                 };
             }
 
-            self.read_next_line();
-
-            return self.next();
+            return TokenInfo {
+                line: self.line,
+                start_column,
+                token: word.into(),
+            };
         }
 
         self.read_next_line();
@@ -155,26 +188,30 @@ impl<T: AsRef<[u8]>> Lexer<T> {
     }
 }
 
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn it_fetches_if_statement() {
+    fn it_parses_if_statement() {
         let code = String::from("if (x == y)");
         let mut lexer = Lexer::new(code);
-        let info = lexer.next();
+        let token_info = lexer.next();
 
-        assert_eq!(1, info.start_column);
-        assert_eq!(1, info.line);
-
-        match info.token {
+        assert_eq!(1, token_info.start_column);
+        assert_eq!(1, token_info.line);
+        match token_info.token {
             Token::KEYWORD(lexeme) => assert_eq!("if", lexeme),
             _ => assert!(false, "Invalid token"),
         }
+
+        let next_token_info = lexer.next();
+
+        assert_eq!(4, next_token_info.start_column);
+        assert_eq!(1, next_token_info.line);
+        assert!(
+            matches!(next_token_info.token, Token::LPAREN),
+            "Invalid token!"
+        );
     }
 }
