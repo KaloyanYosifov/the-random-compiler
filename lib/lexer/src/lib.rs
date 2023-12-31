@@ -1,10 +1,11 @@
 use std::{
     fmt::Display,
     fs::File,
-    io::{BufRead, BufReader, Read},
+    io::{BufRead, BufReader, Cursor, Read},
     path::Path,
 };
 
+#[derive(Debug)]
 pub enum Operator {
     PLUS,
     MINUS,
@@ -12,6 +13,7 @@ pub enum Operator {
     DIV,
 }
 
+#[derive(Debug)]
 pub enum Token {
     IDENTIFIER(String),
     KEYWORD(String),
@@ -55,26 +57,28 @@ impl Display for Operator {
     }
 }
 
+#[derive(Debug)]
 pub struct TokenInfo {
     line: usize,         // Would lines exceed 4 billion? :D
     start_column: usize, // Would horizontal characters exceed 4 billion? :D
     token: Token,
 }
 
-pub struct Lexer {
+#[derive(Debug)]
+pub struct Lexer<T> {
     line: usize,
     column: usize,
-    buffer: BufReader<File>,
+    cursor: Cursor<T>,
     current_line_iterator: Option<std::vec::IntoIter<char>>,
 }
 
-impl Lexer {
-    pub fn new(path: &str) -> Result<Self, String> {
+impl Lexer<BufReader<File>> {
+    pub fn from_file(path: &str) -> Result<Self, String> {
         match File::open(Path::new(&path)) {
             Ok(file) => Ok(Self {
                 line: 0,
                 column: 0,
-                buffer: BufReader::new(file),
+                cursor: Cursor::new(BufReader::new(file)),
                 current_line_iterator: None,
             }),
             _ => Err("File couldn't be opened!".to_owned()),
@@ -82,10 +86,21 @@ impl Lexer {
     }
 }
 
-impl Lexer {
+impl Lexer<String> {
+    pub fn new(code: String) -> Self {
+        Self {
+            line: 0,
+            column: 0,
+            cursor: Cursor::new(code),
+            current_line_iterator: None,
+        }
+    }
+}
+
+impl<T: AsRef<[u8]>> Lexer<T> {
     fn read_next_line(&mut self) -> &mut Self {
         let mut line: String = String::from("");
-        self.buffer.read_line(&mut line).unwrap();
+        self.cursor.read_line(&mut line).unwrap();
 
         let chars = line.chars().collect::<Vec<_>>().into_iter();
         self.current_line_iterator = Some(chars);
@@ -98,11 +113,33 @@ impl Lexer {
     pub fn next(&mut self) -> TokenInfo {
         if let Some(iterator) = &mut self.current_line_iterator {
             if let Some(char) = iterator.next() {
-                println!("{}", char);
+                self.column += 1;
+
+                let start_column = self.column;
+                let mut word = String::from("");
+
+                if char != ' ' && char != '\n' {
+                    word.push(char);
+                }
+
+                for char in iterator {
+                    self.column += 1;
+
+                    match char {
+                        ' ' | '\n' => {
+                            break;
+                        }
+                        c @ (';' | '(' | ')' | '{' | '}') => {
+                            word.push(c);
+                            break;
+                        }
+                        c => word.push(c),
+                    };
+                }
 
                 return TokenInfo {
                     line: self.line,
-                    start_column: self.column,
+                    start_column,
                     token: Token::SEMI,
                 };
             }
@@ -127,9 +164,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn it_fetches_if_statement() {
+        let code = String::from("if (x == y)");
+        let mut lexer = Lexer::new(code);
+        let info = lexer.next();
+
+        assert_eq!(1, info.start_column);
+        assert_eq!(1, info.line);
+
+        match info.token {
+            Token::KEYWORD(lexeme) => assert_eq!("if", lexeme),
+            _ => assert!(false, "Invalid token"),
+        }
     }
 }
-
