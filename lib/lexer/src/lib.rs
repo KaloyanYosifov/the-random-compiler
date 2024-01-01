@@ -1,8 +1,10 @@
 use std::{
     fmt::Display,
     fs::File,
-    io::{BufRead, BufReader, Cursor, Read},
+    io::{BufRead, BufReader, Cursor},
+    iter::Peekable,
     path::Path,
+    vec::IntoIter,
 };
 
 #[derive(Debug)]
@@ -141,7 +143,7 @@ pub struct Lexer<T> {
     line: usize,
     column: usize,
     cursor: Cursor<T>,
-    current_line_iterator: Option<std::vec::IntoIter<char>>,
+    current_line_iterator: Option<Peekable<IntoIter<char>>>,
 }
 
 impl Lexer<BufReader<File>> {
@@ -174,7 +176,7 @@ impl<T: AsRef<[u8]>> Lexer<T> {
         let mut line: String = String::from("");
         self.cursor.read_line(&mut line).unwrap();
 
-        let chars = line.chars().collect::<Vec<_>>().into_iter();
+        let chars = line.chars().collect::<Vec<_>>().into_iter().peekable();
         self.current_line_iterator = Some(chars);
         self.line += 1;
         self.column = 0;
@@ -184,20 +186,18 @@ impl<T: AsRef<[u8]>> Lexer<T> {
 
     pub fn next(&mut self) -> TokenInfo {
         if let Some(iterator) = &mut self.current_line_iterator {
-            let mut peekable_iter = iterator.peekable();
-            if peekable_iter.peek().is_none() {
+            if iterator.peek().is_none() {
                 self.read_next_line();
 
                 return self.next();
             }
 
             let mut word = String::from("");
-            let start_column = self.column + 1;
+            let mut start_column = self.column + 1;
 
-            while let Some(char) = peekable_iter.next() {
+            while let Some(char) = iterator.next() {
                 self.column += 1;
-                let next_char = peekable_iter.peek().unwrap_or(&' ');
-                println!("Now: {}, next: {}", char, next_char);
+                let next_char = *iterator.peek().unwrap_or(&' ');
 
                 match char {
                     c if c.is_whitespace() => {
@@ -205,24 +205,35 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                             break;
                         }
 
+                        start_column += 1;
+
                         continue;
                     }
-                    c if c == '=' && *next_char == '=' => {
+                    c if c == '=' && next_char == '=' => {
+                        self.column += 1;
+                        iterator.next();
+
                         return TokenInfo {
                             line: self.line,
                             start_column,
                             token: Token::Operator(Operator::Equal),
-                        }
+                        };
                     }
                     c @ (';' | '(' | ')' | '{' | '}' | '=') => {
-                        // TODO: add check to peek next character to see if we have another =
                         return TokenInfo {
                             line: self.line,
                             start_column,
                             token: c.into(),
                         };
                     }
-                    c => word.push(c),
+                    c => {
+                        word.push(c);
+
+                        match next_char {
+                            ';' | '(' | ')' | '{' | '}' | '=' => break,
+                            _ => continue,
+                        }
+                    }
                 };
             }
 
@@ -269,17 +280,17 @@ mod tests {
         assert!(matches!(token_info.token, Token::Operator(x) if matches!(x, Operator::Equal)));
 
         let token_info = lexer.next();
-        assert_eq!(9, token_info.start_column);
+        assert_eq!(10, token_info.start_column);
         assert_eq!(1, token_info.line);
         assert!(matches!(token_info.token, Token::Identifier(x) if x == "y"));
 
         let token_info = lexer.next();
-        assert_eq!(10, token_info.start_column);
+        assert_eq!(11, token_info.start_column);
         assert_eq!(1, token_info.line);
         assert!(matches!(token_info.token, Token::Rparen));
 
         let token_info = lexer.next();
-        assert_eq!(12, token_info.start_column);
+        assert_eq!(13, token_info.start_column);
         assert_eq!(1, token_info.line);
         assert!(matches!(token_info.token, Token::LCurly));
     }
@@ -313,13 +324,13 @@ mod tests {
         let mut lexer = Lexer::new(code);
         let token_info = lexer.next();
 
-        assert_eq!(1, token_info.start_column);
+        assert_eq!(13, token_info.start_column);
         assert_eq!(1, token_info.line);
         assert!(matches!(token_info.token, Token::Keyword(x) if x == "if"));
 
         let token_info = lexer.next();
 
-        assert_eq!(1, token_info.start_column);
+        assert_eq!(11, token_info.start_column);
         assert_eq!(2, token_info.line);
         assert!(matches!(token_info.token, Token::Keyword(x) if x == "while"));
     }
