@@ -20,6 +20,15 @@ pub enum Operator {
     GreaterEqual,
 }
 
+impl Operator {
+    fn is_operator(op: &str) -> bool {
+        match op {
+            "+" | "-" | "/" | "*" | "==" | "<" | "<=" | ">" | ">=" => true,
+            _ => false,
+        }
+    }
+}
+
 impl Display for Operator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let to_display = match self {
@@ -77,6 +86,15 @@ pub enum Token {
     Error(String),
 }
 
+impl Token {
+    fn is_special_char(char: char) -> bool {
+        match char {
+            ';' | '(' | ')' | '{' | '}' => true,
+            _ => false,
+        }
+    }
+}
+
 impl Display for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let to_display = match self {
@@ -118,7 +136,7 @@ impl From<&str> for Token {
         // TODO: Implement grammar (For now we do simple stuff)
         match word {
             word @ ("if" | "elif" | "else" | "while" | "for") => Self::Keyword(word.to_owned()),
-            word @ ("+" | "-" | "/" | "*" | "==" | "<" | "<=" | ">" | ">=") => Self::Operator(word.into()),
+            word if Operator::is_operator(word) => Self::Operator(word.into()),
             _ => Self::Identifier(word.to_owned()) // everything else is an identifier for now
             // _ => Self::Error(format!("Failed to convert word to token: {}", word)),
         }
@@ -195,16 +213,10 @@ impl<T: AsRef<[u8]>> Lexer<T> {
             let mut word = String::from("");
             let mut start_column = self.column + 1;
 
-            let is_special_char = |char: char| -> bool {
-                match char {
-                    ';' | '(' | ')' | '{' | '}' | '=' => true,
-                    _ => false,
-                }
-            };
-
             while let Some(char) = iterator.next() {
                 self.column += 1;
                 let next_char = *iterator.peek().unwrap_or(&' ');
+                let concatanated = format!("{}{}", char, next_char);
 
                 match char {
                     c if c.is_whitespace() => {
@@ -216,17 +228,18 @@ impl<T: AsRef<[u8]>> Lexer<T> {
 
                         continue;
                     }
-                    c if c == '=' && next_char == '=' => {
+                    // Check if concatanated with the next character we get an operator
+                    _ if next_char != ' ' && Operator::is_operator(&concatanated) => {
                         self.column += 1;
                         iterator.next();
 
                         return TokenInfo {
                             line: self.line,
                             start_column,
-                            token: Token::Operator(Operator::Equal),
+                            token: Token::Operator(concatanated.into()),
                         };
                     }
-                    c if is_special_char(c) => {
+                    c if Token::is_special_char(c) || Operator::is_operator(&c.to_string()) => {
                         return TokenInfo {
                             line: self.line,
                             start_column,
@@ -236,7 +249,7 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                     c => {
                         word.push(c);
 
-                        if is_special_char(next_char) {
+                        if Token::is_special_char(next_char) {
                             break;
                         }
                     }
