@@ -195,6 +195,13 @@ impl<T: AsRef<[u8]>> Lexer<T> {
             let mut word = String::from("");
             let mut start_column = self.column + 1;
 
+            let is_special_char = |char: char| -> bool {
+                match char {
+                    ';' | '(' | ')' | '{' | '}' | '=' => true,
+                    _ => false,
+                }
+            };
+
             while let Some(char) = iterator.next() {
                 self.column += 1;
                 let next_char = *iterator.peek().unwrap_or(&' ');
@@ -219,7 +226,7 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                             token: Token::Operator(Operator::Equal),
                         };
                     }
-                    c @ (';' | '(' | ')' | '{' | '}' | '=') => {
+                    c if is_special_char(c) => {
                         return TokenInfo {
                             line: self.line,
                             start_column,
@@ -229,9 +236,8 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                     c => {
                         word.push(c);
 
-                        match next_char {
-                            ';' | '(' | ')' | '{' | '}' | '=' => break,
-                            _ => continue,
+                        if is_special_char(next_char) {
+                            break;
                         }
                     }
                 };
