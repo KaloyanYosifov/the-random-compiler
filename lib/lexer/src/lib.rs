@@ -273,84 +273,51 @@ impl<T: AsRef<[u8]>> Lexer<T> {
 mod tests {
     use super::*;
 
+    macro_rules! assert_token_info {
+        ($token:ident, $column:literal, $line:literal, $pattern:pat $(if $guard:expr)? $(,)?) => {
+            assert_eq!($column, $token.start_column);
+            assert_eq!($line, $token.line);
+            assert!(matches!($token.token, $pattern $(if $guard)?));
+        };
+
+        ($token:expr, $column:literal, $line:literal, $pattern:pat $(if $guard:expr)? $(,)?) => {
+            let token = $token;
+            assert_eq!($column, token.start_column);
+            assert_eq!($line, token.line);
+            assert!(matches!(token.token, $pattern $(if $guard)?));
+        };
+    }
+
     #[test]
     fn it_parses_if_statement() {
         let code = String::from("if (x == y) {");
         let mut lexer = Lexer::new(code);
 
-        let token_info = lexer.next();
-        assert_eq!(1, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Keyword(x) if x == "if"));
-
-        let token_info = lexer.next();
-        assert_eq!(4, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Lparen));
-
-        let token_info = lexer.next();
-        assert_eq!(5, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Identifier(x) if x == "x"));
-
-        let token_info = lexer.next();
-        assert_eq!(7, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Operator(x) if matches!(x, Operator::Equal)));
-
-        let token_info = lexer.next();
-        assert_eq!(10, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Identifier(x) if x == "y"));
-
-        let token_info = lexer.next();
-        assert_eq!(11, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Rparen));
-
-        let token_info = lexer.next();
-        assert_eq!(13, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::LCurly));
+        assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "if");
+        assert_token_info!(lexer.next(), 4, 1, Token::Lparen);
+        assert_token_info!(lexer.next(), 5, 1, Token::Identifier(x) if x == "x");
+        assert_token_info!(lexer.next(), 7, 1, Token::Operator(x) if matches!(x, Operator::Equal));
+        assert_token_info!(lexer.next(), 10, 1, Token::Identifier(x) if x == "y");
+        assert_token_info!(lexer.next(), 11, 1, Token::Rparen);
+        assert_token_info!(lexer.next(), 13, 1, Token::LCurly);
     }
 
     #[test]
     fn it_can_parse_multiline() {
         let code = String::from("if\nwhile\nfor");
         let mut lexer = Lexer::new(code);
-        let token_info = lexer.next();
 
-        assert_eq!(1, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Keyword(x) if x == "if"));
-
-        let token_info = lexer.next();
-
-        assert_eq!(1, token_info.start_column);
-        assert_eq!(2, token_info.line);
-        assert!(matches!(token_info.token, Token::Keyword(x) if x == "while"));
-
-        let token_info = lexer.next();
-
-        assert_eq!(1, token_info.start_column);
-        assert_eq!(3, token_info.line);
-        assert!(matches!(token_info.token, Token::Keyword(x) if x == "for"));
+        assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "if");
+        assert_token_info!(lexer.next(), 1, 2, Token::Keyword(x) if x == "while");
+        assert_token_info!(lexer.next(), 1, 3, Token::Keyword(x) if x == "for");
     }
 
     #[test]
     fn it_does_not_care_about_whitespaces() {
         let code = String::from("            if\n     \t    while\n");
         let mut lexer = Lexer::new(code);
-        let token_info = lexer.next();
 
-        assert_eq!(13, token_info.start_column);
-        assert_eq!(1, token_info.line);
-        assert!(matches!(token_info.token, Token::Keyword(x) if x == "if"));
-
-        let token_info = lexer.next();
-
-        assert_eq!(11, token_info.start_column);
-        assert_eq!(2, token_info.line);
-        assert!(matches!(token_info.token, Token::Keyword(x) if x == "while"));
+        assert_token_info!(lexer.next(), 13, 1, Token::Keyword(x) if x == "if");
+        assert_token_info!(lexer.next(), 11, 2, Token::Keyword(x) if x == "while");
     }
 }
