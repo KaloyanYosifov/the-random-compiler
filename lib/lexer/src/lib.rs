@@ -362,14 +362,14 @@ mod tests {
 
     #[test]
     fn it_can_parse_assignment_statement_with_string() {
-        let code = String::from("int testing = \"Hello there\";");
+        let code = String::from("string testing = \"Hello there\";");
         let mut lexer = Lexer::new(code);
 
-        assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "int");
-        assert_token_info!(lexer.next(), 5, 1, Token::Identifier(x) if x == "testing");
-        assert_token_info!(lexer.next(), 13, 1, Token::Assignment);
-        assert_token_info!(lexer.next(), 15, 1, Token::String(x) if x == "Hello there");
-        assert_token_info!(lexer.next(), 28, 1, Token::Semi);
+        assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "string");
+        assert_token_info!(lexer.next(), 8, 1, Token::Identifier(x) if x == "testing");
+        assert_token_info!(lexer.next(), 16, 1, Token::Assignment);
+        assert_token_info!(lexer.next(), 18, 1, Token::String(x) if x == "Hello there");
+        assert_token_info!(lexer.next(), 31, 1, Token::Semi);
     }
 
     #[test]
@@ -382,5 +382,19 @@ mod tests {
         assert_token_info!(lexer.next(), 13, 1, Token::Assignment);
         assert_token_info!(lexer.next(), 15, 1, Token::Number(x) if x == "33");
         assert_token_info!(lexer.next(), 17, 1, Token::Semi);
+    }
+
+    #[test]
+    fn it_can_parse_expressions_in_assignment_statements() {
+        let code = String::from("bool testing = 5 == 3.33;");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "bool");
+        assert_token_info!(lexer.next(), 6, 1, Token::Identifier(x) if x == "testing");
+        assert_token_info!(lexer.next(), 14, 1, Token::Assignment);
+        assert_token_info!(lexer.next(), 16, 1, Token::Number(x) if x == "5");
+        assert_token_info!(lexer.next(), 18, 1, Token::Operator(x) if matches!(x, Operator::Equal));
+        assert_token_info!(lexer.next(), 21, 1, Token::Number(x) if x == "3.33");
+        assert_token_info!(lexer.next(), 25, 1, Token::Semi);
     }
 }
