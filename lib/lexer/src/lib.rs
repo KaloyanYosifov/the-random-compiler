@@ -2,7 +2,7 @@ use regex::Regex;
 use std::{
     fmt::Display,
     fs::File,
-    io::{BufRead, BufReader, Cursor},
+    io::{BufRead, BufReader, Cursor, Error},
     iter::Peekable,
     path::Path,
     vec::IntoIter,
@@ -142,6 +142,7 @@ impl Display for Token {
 impl From<char> for Token {
     fn from(c: char) -> Self {
         match c {
+            c if Operator::is_operator(&c.to_string()) => Self::Operator(c.to_string().into()),
             ';' => Self::Semi,
             '(' => Self::Lparen,
             ')' => Self::Rparen,
@@ -183,21 +184,45 @@ pub struct TokenInfo {
     token: Token,
 }
 
-#[derive(Debug)]
-pub struct Lexer<T> {
+trait LineReader {
+    fn read_next_line(&mut self, buf: &mut String) -> std::io::Result<usize>;
+}
+
+impl LineReader for BufReader<File> {
+    fn read_next_line(&mut self, buf: &mut String) -> std::io::Result<usize> {
+        self.read_line(buf)
+    }
+}
+
+impl LineReader for Cursor<String> {
+    fn read_next_line(&mut self, buf: &mut String) -> std::io::Result<usize> {
+        self.read_line(buf)
+    }
+}
+
+pub struct Lexer {
     line: usize,
     column: usize,
-    cursor: Cursor<T>,
+    cursor: Box<dyn LineReader>,
     current_line_iterator: Option<Peekable<IntoIter<char>>>,
 }
 
-impl Lexer<BufReader<File>> {
+impl Lexer {
+    pub fn new(code: String) -> Self {
+        Self {
+            line: 0,
+            column: 0,
+            cursor: Box::new(Cursor::new(code)),
+            current_line_iterator: None,
+        }
+    }
+
     pub fn from_file(path: &str) -> Result<Self, String> {
         match File::open(Path::new(&path)) {
             Ok(file) => Ok(Self {
                 line: 0,
                 column: 0,
-                cursor: Cursor::new(BufReader::new(file)),
+                cursor: Box::new(BufReader::new(file)),
                 current_line_iterator: None,
             }),
             _ => Err("File couldn't be opened!".to_owned()),
@@ -205,34 +230,30 @@ impl Lexer<BufReader<File>> {
     }
 }
 
-impl Lexer<String> {
-    pub fn new(code: String) -> Self {
-        Self {
-            line: 0,
-            column: 0,
-            cursor: Cursor::new(code),
-            current_line_iterator: None,
-        }
-    }
-}
-
-impl<T: AsRef<[u8]>> Lexer<T> {
-    fn read_next_line(&mut self) -> &mut Self {
+impl Lexer {
+    fn read_next_line(&mut self) -> Result<(), Error> {
         let mut line: String = String::from("");
-        self.cursor.read_line(&mut line).unwrap();
+        self.cursor.read_next_line(&mut line)?;
+
+        if line.len() == 0 {
+            return Err(Error::new(std::io::ErrorKind::NotFound, "end of line"));
+        }
 
         let chars = line.chars().collect::<Vec<_>>().into_iter().peekable();
         self.current_line_iterator = Some(chars);
         self.line += 1;
         self.column = 0;
 
-        self
+        Ok(())
     }
 
-    pub fn next(&mut self) -> TokenInfo {
+    pub fn next(&mut self) -> Result<TokenInfo, String> {
         if let Some(iterator) = &mut self.current_line_iterator {
             if iterator.peek().is_none() {
-                self.read_next_line();
+                if self.read_next_line().is_err() {
+                    // TODO: use custom errors
+                    return Err("No lines".to_owned());
+                }
 
                 return self.next();
             }
@@ -264,20 +285,20 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                         self.column += 1;
                         iterator.next();
 
-                        return TokenInfo {
+                        return Ok(TokenInfo {
                             line: self.line,
                             start_column,
                             token: Token::Operator(concatanated.into()),
-                        };
+                        });
                     }
-                    c if !in_a_string && Token::is_special_char(c)
-                        || Operator::is_operator(&c.to_string()) =>
+                    c if !in_a_string
+                        && (Token::is_special_char(c) || Operator::is_operator(&c.to_string())) =>
                     {
-                        return TokenInfo {
+                        return Ok(TokenInfo {
                             line: self.line,
                             start_column,
                             token: c.into(),
-                        };
+                        });
                     }
                     c => {
                         word.push(c);
@@ -293,14 +314,21 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                 };
             }
 
-            return TokenInfo {
+            if word.len() == 0 {
+                return self.next();
+            }
+
+            return Ok(TokenInfo {
                 line: self.line,
                 start_column,
                 token: word.into(),
-            };
+            });
         }
 
-        self.read_next_line();
+        if self.read_next_line().is_err() {
+            // TODO: use custom errors
+            return Err("No lines".to_owned());
+        }
 
         self.next()
     }
@@ -319,7 +347,7 @@ mod tests {
         };
 
         ($token:expr, $column:literal, $line:literal, $pattern:pat $(if $guard:expr)? $(,)?) => {
-            let token = $token;
+            let token = $token.unwrap();
             let msg = format!("Token did not match. Actual: {:?}", token.token);
             assert_eq!($column, token.start_column);
             assert_eq!($line, token.line);
