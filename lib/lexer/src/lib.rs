@@ -425,4 +425,18 @@ mod tests {
         assert_token_info!(lexer.next(), 21, 1, Token::Number(x) if x == "3.33");
         assert_token_info!(lexer.next(), 25, 1, Token::Semi);
     }
+
+    #[test]
+    fn it_can_parse_a_function_call() {
+        let code = String::from("sum(a + b);");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.next(), 4, 1, Token::Lparen);
+        assert_token_info!(lexer.next(), 5, 1, Token::Identifier(x) if x == "a");
+        assert_token_info!(lexer.next(), 7, 1, Token::Operator(x) if matches!(x, Operator::Plus));
+        assert_token_info!(lexer.next(), 9, 1, Token::Identifier(x) if x == "b");
+        assert_token_info!(lexer.next(), 10, 1, Token::Rparen);
+        assert_token_info!(lexer.next(), 11, 1, Token::Semi);
+    }
 }
