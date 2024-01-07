@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::{
     fmt::Display,
     fs::File,
@@ -77,6 +78,8 @@ pub enum Token {
     Identifier(String),
     Keyword(String),
     Operator(Operator),
+    String(String),
+    Number(String),
     Lparen,
     Rparen,
     LCurly,
@@ -89,9 +92,29 @@ pub enum Token {
 impl Token {
     fn is_special_char(char: char) -> bool {
         match char {
-            ';' | '(' | ')' | '{' | '}' => true,
+            ';' | '(' | ')' | '{' | '}' | '=' => true,
             _ => false,
         }
+    }
+
+    fn is_keyword(word: &str) -> bool {
+        match word {
+            "if" | "elif" | "else" | "while" | "for" | "return" | "continue" | "break" => true, // important
+            "int" | "bool" | "string" | "char" | "float" => true, // primitives
+            _ => false,
+        }
+    }
+
+    fn is_string(word: &str) -> bool {
+        let regex = Regex::new(r#"^(".*?")$"#).unwrap();
+
+        regex.captures(word).is_some()
+    }
+
+    fn is_number(word: &str) -> bool {
+        let regex = Regex::new(r#"^(\d+(\.\d+)?)$"#).unwrap();
+
+        regex.captures(word).is_some()
     }
 }
 
@@ -101,6 +124,8 @@ impl Display for Token {
             Self::Identifier(id) => format!("IDENTIFIER: {}", id),
             Self::Keyword(key) => format!("KEYWORD: {}", key),
             Self::Operator(operator) => format!("OPERATOR: {}", operator),
+            Self::String(value) => format!("STRING: {}", value),
+            Self::Number(value) => format!("NUMBER: {}", value),
             Self::Lparen => "(".to_owned(),
             Self::Rparen => ")".to_owned(),
             Self::LCurly => "{".to_owned(),
@@ -135,8 +160,10 @@ impl From<&str> for Token {
     fn from(word: &str) -> Self {
         // TODO: Implement grammar (For now we do simple stuff)
         match word {
-            word @ ("if" | "elif" | "else" | "while" | "for") => Self::Keyword(word.to_owned()),
+            word if Self::is_keyword(word) => Self::Keyword(word.to_owned()),
             word if Operator::is_operator(word) => Self::Operator(word.into()),
+            word if Self::is_string(word) => Self::String(word.into()),
+            word if Self::is_number(word) => Self::Number(word.into()),
             _ => Self::Identifier(word.to_owned()) // everything else is an identifier for now
             // _ => Self::Error(format!("Failed to convert word to token: {}", word)),
         }
@@ -319,5 +346,17 @@ mod tests {
 
         assert_token_info!(lexer.next(), 13, 1, Token::Keyword(x) if x == "if");
         assert_token_info!(lexer.next(), 11, 2, Token::Keyword(x) if x == "while");
+    }
+
+    #[test]
+    fn it_can_parse_identifier() {
+        let code = String::from("int testing = 33;");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "int");
+        assert_token_info!(lexer.next(), 5, 1, Token::Identifier(x) if x == "testing");
+        assert_token_info!(lexer.next(), 13, 1, Token::Assignment);
+        assert_token_info!(lexer.next(), 15, 1, Token::Number(x) if x == "33");
+        assert_token_info!(lexer.next(), 17, 1, Token::Semi);
     }
 }
