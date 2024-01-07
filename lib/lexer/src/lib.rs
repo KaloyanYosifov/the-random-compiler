@@ -162,7 +162,7 @@ impl From<&str> for Token {
         match word {
             word if Self::is_keyword(word) => Self::Keyword(word.to_owned()),
             word if Operator::is_operator(word) => Self::Operator(word.into()),
-            word if Self::is_string(word) => Self::String(word.into()),
+            word if Self::is_string(word) => Self::String(word[1..word.len() - 1].into()),
             word if Self::is_number(word) => Self::Number(word.into()),
             _ => Self::Identifier(word.to_owned()) // everything else is an identifier for now
             // _ => Self::Error(format!("Failed to convert word to token: {}", word)),
@@ -237,6 +237,7 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                 return self.next();
             }
 
+            let mut in_a_string = false; // temp fix to not break out of a string if it has spaces
             let mut word = String::from("");
             let mut start_column = self.column + 1;
 
@@ -246,7 +247,7 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                 let concatanated = format!("{}{}", char, next_char);
 
                 match char {
-                    c if c.is_whitespace() => {
+                    c if !in_a_string && c.is_whitespace() => {
                         if word.len() > 0 {
                             break;
                         }
@@ -256,7 +257,10 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                         continue;
                     }
                     // Check if concatanated with the next character we get an operator
-                    _ if next_char != ' ' && Operator::is_operator(&concatanated) => {
+                    _ if !in_a_string
+                        && next_char != ' '
+                        && Operator::is_operator(&concatanated) =>
+                    {
                         self.column += 1;
                         iterator.next();
 
@@ -266,7 +270,9 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                             token: Token::Operator(concatanated.into()),
                         };
                     }
-                    c if Token::is_special_char(c) || Operator::is_operator(&c.to_string()) => {
+                    c if !in_a_string && Token::is_special_char(c)
+                        || Operator::is_operator(&c.to_string()) =>
+                    {
                         return TokenInfo {
                             line: self.line,
                             start_column,
@@ -276,7 +282,11 @@ impl<T: AsRef<[u8]>> Lexer<T> {
                     c => {
                         word.push(c);
 
-                        if Token::is_special_char(next_char) {
+                        if c == '"' {
+                            in_a_string = !in_a_string;
+                        }
+
+                        if !in_a_string && Token::is_special_char(next_char) {
                             break;
                         }
                     }
@@ -302,16 +312,18 @@ mod tests {
 
     macro_rules! assert_token_info {
         ($token:ident, $column:literal, $line:literal, $pattern:pat $(if $guard:expr)? $(,)?) => {
+            let msg = format!("Token did not match. Actual: {:?}", token.token);
             assert_eq!($column, $token.start_column);
             assert_eq!($line, $token.line);
-            assert!(matches!($token.token, $pattern $(if $guard)?));
+            assert!(matches!($token.token, $pattern $(if $guard)?), "{}", msg);
         };
 
         ($token:expr, $column:literal, $line:literal, $pattern:pat $(if $guard:expr)? $(,)?) => {
             let token = $token;
+            let msg = format!("Token did not match. Actual: {:?}", token.token);
             assert_eq!($column, token.start_column);
             assert_eq!($line, token.line);
-            assert!(matches!(token.token, $pattern $(if $guard)?));
+            assert!(matches!(token.token, $pattern $(if $guard)?), "{}", msg);
         };
     }
 
@@ -349,7 +361,19 @@ mod tests {
     }
 
     #[test]
-    fn it_can_parse_identifier() {
+    fn it_can_parse_assignment_statement_with_string() {
+        let code = String::from("int testing = \"Hello there\";");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "int");
+        assert_token_info!(lexer.next(), 5, 1, Token::Identifier(x) if x == "testing");
+        assert_token_info!(lexer.next(), 13, 1, Token::Assignment);
+        assert_token_info!(lexer.next(), 15, 1, Token::String(x) if x == "Hello there");
+        assert_token_info!(lexer.next(), 28, 1, Token::Semi);
+    }
+
+    #[test]
+    fn it_can_parse_an_assignment_statement_with_number() {
         let code = String::from("int testing = 33;");
         let mut lexer = Lexer::new(code);
 
