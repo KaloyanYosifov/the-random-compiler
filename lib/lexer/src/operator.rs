@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Debug)]
 pub enum Operator {
     Plus,
     Minus,

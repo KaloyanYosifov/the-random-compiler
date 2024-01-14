@@ -233,7 +233,7 @@ mod tests {
         assert_token_info!(lexer.next(), 1, 1, Token::Keyword(x) if x == "string");
         assert_token_info!(lexer.next(), 8, 1, Token::Identifier(x) if x == "testing");
         assert_token_info!(lexer.next(), 16, 1, Token::Assignment);
-        assert_token_info!(lexer.next(), 18, 1, Token::String(x) if x == "Hello there");
+        assert_token_info!(lexer.next(), 18, 1, Token::Literal(x) if x == "Hello there");
         assert_token_info!(lexer.next(), 31, 1, Token::Semi);
     }
 
