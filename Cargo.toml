@@ -10,3 +10,7 @@ members = ["./lib/*"]
 
 [dependencies]
 lexer = { path = "./lib/lexer" }
+thiserror = { workspace = true }
+
+[workspace.dependencies]
+thiserror = "1.0.56"

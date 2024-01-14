@@ -1,12 +1,24 @@
+use thiserror::Error as ThisError;
+
 use crate::operator::*;
 use crate::token::*;
 use std::{
     fs::File,
-    io::{BufRead, BufReader, Cursor, Error},
+    io::{BufRead, BufReader, Cursor, Error as IOError},
     iter::Peekable,
     path::Path,
     vec::IntoIter,
 };
+
+#[derive(ThisError, Debug)]
+pub enum LexerError {
+    #[error("Reached the end of the file!")]
+    EndOfFileReached,
+    #[error("Lexer was unable to read the next line of the file!")]
+    FailedToReadNextLine(#[from] IOError),
+    #[error("Could not open file: {0}")]
+    CannotOpenFile(String),
+}
 
 #[derive(Debug)]
 pub struct TokenInfo {
@@ -48,7 +60,7 @@ impl Lexer {
         }
     }
 
-    pub fn from_file(path: &str) -> Result<Self, String> {
+    pub fn from_file(path: &str) -> Result<Self, LexerError> {
         match File::open(Path::new(&path)) {
             Ok(file) => Ok(Self {
                 line: 0,
@@ -56,18 +68,18 @@ impl Lexer {
                 cursor: Box::new(BufReader::new(file)),
                 current_line_iterator: None,
             }),
-            _ => Err("File couldn't be opened!".to_owned()),
+            _ => Err(LexerError::CannotOpenFile(path.to_owned())),
         }
     }
 }
 
 impl Lexer {
-    fn read_next_line(&mut self) -> Result<(), Error> {
+    fn read_next_line(&mut self) -> Result<(), LexerError> {
         let mut line: String = String::from("");
         self.cursor.read_next_line(&mut line)?;
 
         if line.len() == 0 {
-            return Err(Error::new(std::io::ErrorKind::NotFound, "end of line"));
+            return Err(LexerError::EndOfFileReached);
         }
 
         let chars = line.chars().collect::<Vec<_>>().into_iter().peekable();
@@ -78,13 +90,10 @@ impl Lexer {
         Ok(())
     }
 
-    pub fn next(&mut self) -> Result<TokenInfo, String> {
+    pub fn next(&mut self) -> Result<TokenInfo, LexerError> {
         if let Some(iterator) = &mut self.current_line_iterator {
             if iterator.peek().is_none() {
-                if self.read_next_line().is_err() {
-                    // TODO: use custom errors
-                    return Err("No lines".to_owned());
-                }
+                self.read_next_line()?;
 
                 return self.next();
             }
@@ -156,10 +165,7 @@ impl Lexer {
             });
         }
 
-        if self.read_next_line().is_err() {
-            // TODO: use custom errors
-            return Err("No lines".to_owned());
-        }
+        self.read_next_line()?;
 
         self.next()
     }
@@ -269,5 +275,28 @@ mod tests {
         assert_token_info!(lexer.next(), 9, 1, Token::Identifier(x) if x == "b");
         assert_token_info!(lexer.next(), 10, 1, Token::Rparen);
         assert_token_info!(lexer.next(), 11, 1, Token::Semi);
+    }
+
+    #[test]
+    fn it_throws_an_error_if_it_cannot_open_file() {
+        let file = String::from("./some-file-that-does-not-exist.cl");
+
+        if let Err(error) = Lexer::from_file(&file) {
+            assert!(matches!(
+                error,
+                LexerError::CannotOpenFile(x) if x == file
+            ));
+        } else {
+            assert!(false, "We should have failed!");
+        }
+    }
+
+    #[test]
+    fn it_throws_an_error_if_we_reached_end_of_file() {
+        let code = String::from("");
+        let mut lexer = Lexer::new(code);
+        let error = lexer.next().unwrap_err();
+
+        assert!(matches!(error, LexerError::EndOfFileReached));
     }
 }
