@@ -22,9 +22,9 @@ pub enum LexerError {
 
 #[derive(Debug)]
 pub struct TokenInfo {
-    line: usize,         // Would lines exceed 4 billion? :D
-    start_column: usize, // Would horizontal characters exceed 4 billion? :D
-    token: Token,
+    pub line: usize,         // Would lines exceed 4 billion? :D
+    pub start_column: usize, // Would horizontal characters exceed 4 billion? :D
+    pub token: Token,
 }
 
 trait LineReader {

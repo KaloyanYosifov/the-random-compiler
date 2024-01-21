@@ -1,20 +1,12 @@
 [package]
-name = "cool-compiler"
+name = "parser"
 version = "0.1.0"
 edition = "2021"
-
-[workspace]
-members = ["./lib/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-parser = { path = "./lib/parser" }
+regex = "1.10.2"
 lexer = { workspace = true }
-rstest = { workspace = true }
 thiserror = { workspace = true }
-
-[workspace.dependencies]
-thiserror = "1.0.56"
-rstest = "0.18.2"
-lexer = { path = "./lib/lexer" }
+rstest = { workspace = true }

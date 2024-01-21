@@ -1,3 +1,3 @@
 pub mod lexer;
-mod operator;
-mod token;
+pub mod operator;
+pub mod token;
