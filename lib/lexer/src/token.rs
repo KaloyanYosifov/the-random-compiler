@@ -95,7 +95,6 @@ impl From<char> for Token {
 
 impl From<&str> for Token {
     fn from(word: &str) -> Self {
-        // TODO: Implement grammar (For now we do simple stuff)
         match word {
             word if Self::is_keyword(word) => Self::Keyword(word.to_owned()),
             word if Operator::is_operator(word) => Self::Operator(word.into()),
