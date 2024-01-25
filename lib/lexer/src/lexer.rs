@@ -48,6 +48,7 @@ pub struct Lexer {
     column: usize,
     cursor: Box<dyn LineReader>,
     current_line_iterator: Option<Peekable<IntoIter<char>>>,
+    peeked: Option<TokenInfo>,
 }
 
 impl Lexer {
@@ -57,6 +58,7 @@ impl Lexer {
             column: 0,
             cursor: Box::new(Cursor::new(code)),
             current_line_iterator: None,
+            peeked: None,
         }
     }
 
@@ -67,6 +69,7 @@ impl Lexer {
                 column: 0,
                 cursor: Box::new(BufReader::new(file)),
                 current_line_iterator: None,
+                peeked: None,
             }),
             _ => Err(LexerError::CannotOpenFile(path.to_owned())),
         }
@@ -91,6 +94,10 @@ impl Lexer {
     }
 
     pub fn next(&mut self) -> Result<TokenInfo, LexerError> {
+        if let Some(token_info) = self.peeked.take() {
+            return Ok(token_info);
+        }
+
         if let Some(iterator) = &mut self.current_line_iterator {
             if iterator.peek().is_none() {
                 self.read_next_line()?;
@@ -169,6 +176,22 @@ impl Lexer {
 
         self.next()
     }
+
+    // Implement peek, without going to the next position
+    pub fn peek(&mut self) -> Option<&TokenInfo> {
+        if self.peeked.is_some() {
+            return self.peeked.as_ref();
+        }
+
+        match self.next() {
+            Ok(token_info) => {
+                self.peeked = Some(token_info);
+
+                self.peeked.as_ref()
+            }
+            _ => None,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -177,10 +200,10 @@ mod tests {
 
     macro_rules! assert_token_info {
         ($token:ident, $column:literal, $line:literal, $pattern:pat $(if $guard:expr)? $(,)?) => {
-            let msg = format!("Token did not match. Actual: {:?}", token.token);
+            let msg = format!("Token did not match. Actual: {:?}", $token.token);
             assert_eq!($column, $token.start_column);
             assert_eq!($line, $token.line);
-            assert!(matches!($token.token, $pattern $(if $guard)?), "{}", msg);
+            assert!(matches!(&$token.token, $pattern $(if $guard)?), "{}", msg);
         };
 
         ($token:expr, $column:literal, $line:literal, $pattern:pat $(if $guard:expr)? $(,)?) => {
@@ -188,7 +211,7 @@ mod tests {
             let msg = format!("Token did not match. Actual: {:?}", token.token);
             assert_eq!($column, token.start_column);
             assert_eq!($line, token.line);
-            assert!(matches!(token.token, $pattern $(if $guard)?), "{}", msg);
+            assert!(matches!(&token.token, $pattern $(if $guard)?), "{}", msg);
         };
     }
 
@@ -298,5 +321,39 @@ mod tests {
         let error = lexer.next().unwrap_err();
 
         assert!(matches!(error, LexerError::EndOfFileReached));
+    }
+
+    #[test]
+    fn it_can_peek_next_token() {
+        let code = String::from("sum(a + b);");
+        let mut lexer = Lexer::new(code);
+        let peeked = lexer.peek().unwrap();
+
+        assert_token_info!(peeked, 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "sum");
+    }
+
+    #[test]
+    fn it_can_peek_multiple_times() {
+        let code = String::from("sum(a + b);");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.peek(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.peek(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.peek(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.peek(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.peek(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "sum");
+    }
+
+    #[test]
+    fn it_changes_next_peek_after_next_has_been_called() {
+        let code = String::from("sum(a + b);");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.peek(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.peek(), 4, 1, Token::Lparen);
+        assert_token_info!(lexer.peek(), 4, 1, Token::Lparen);
     }
 }
