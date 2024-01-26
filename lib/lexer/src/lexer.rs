@@ -1,10 +1,11 @@
 use thiserror::Error as ThisError;
 
+use crate::buffer::LexerBufferReader;
 use crate::operator::*;
 use crate::token::*;
 use std::{
     fs::File,
-    io::{BufRead, BufReader, Cursor, Error as IOError},
+    io::{BufReader, Cursor, Error as IOError},
     iter::Peekable,
     path::Path,
     vec::IntoIter,
@@ -30,7 +31,7 @@ pub struct TokenInfo {
 pub struct Lexer {
     line: usize,
     column: usize,
-    cursor: Box<dyn BufRead>,
+    cursor: LexerBufferReader,
     current_line_iterator: Option<Peekable<IntoIter<char>>>,
     peeked: Option<TokenInfo>,
 }
@@ -40,7 +41,7 @@ impl Lexer {
         Self {
             line: 0,
             column: 0,
-            cursor: Box::new(Cursor::new(code)),
+            cursor: LexerBufferReader::new(Box::new(Cursor::new(code))),
             current_line_iterator: None,
             peeked: None,
         }
@@ -51,7 +52,7 @@ impl Lexer {
             Ok(file) => Ok(Self {
                 line: 0,
                 column: 0,
-                cursor: Box::new(BufReader::new(file)),
+                cursor: LexerBufferReader::new(Box::new(BufReader::new(file))),
                 current_line_iterator: None,
                 peeked: None,
             }),
