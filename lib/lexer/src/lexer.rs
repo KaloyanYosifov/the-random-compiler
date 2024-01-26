@@ -27,26 +27,10 @@ pub struct TokenInfo {
     pub token: Token,
 }
 
-trait LineReader {
-    fn read_next_line(&mut self, buf: &mut String) -> std::io::Result<usize>;
-}
-
-impl LineReader for BufReader<File> {
-    fn read_next_line(&mut self, buf: &mut String) -> std::io::Result<usize> {
-        self.read_line(buf)
-    }
-}
-
-impl LineReader for Cursor<String> {
-    fn read_next_line(&mut self, buf: &mut String) -> std::io::Result<usize> {
-        self.read_line(buf)
-    }
-}
-
 pub struct Lexer {
     line: usize,
     column: usize,
-    cursor: Box<dyn LineReader>,
+    cursor: Box<dyn BufRead>,
     current_line_iterator: Option<Peekable<IntoIter<char>>>,
     peeked: Option<TokenInfo>,
 }
@@ -79,7 +63,7 @@ impl Lexer {
 impl Lexer {
     fn read_next_line(&mut self) -> Result<(), LexerError> {
         let mut line: String = String::from("");
-        self.cursor.read_next_line(&mut line)?;
+        self.cursor.read_line(&mut line)?;
 
         if line.len() == 0 {
             return Err(LexerError::EndOfFileReached);
