@@ -33,7 +33,10 @@ impl LexerBufferReader {
             self.last_position = Some(pos);
         }
 
-        self.buffer.read_line(buf)
+        let read_size = self.buffer.read_line(buf)?;
+        *buf = std::mem::take(buf).replace("\n", "");
+
+        Ok(read_size)
     }
 
     pub fn back(&mut self) -> Result<u64, ()> {
@@ -73,7 +76,7 @@ mod tests {
         let mut reader =
             LexerBufferReader::new(Box::new(Cursor::new("testing this\ninteresting thing")));
 
-        assert_next_line!(reader, "testing this\n");
+        assert_next_line!(reader, "testing this");
         assert_next_line!(reader, "interesting thing");
     }
 
@@ -82,11 +85,11 @@ mod tests {
         let mut reader =
             LexerBufferReader::new(Box::new(Cursor::new("testing this\ninteresting thing")));
 
-        assert_next_line!(reader, "testing this\n");
+        assert_next_line!(reader, "testing this");
         assert_next_line!(reader, "interesting thing");
 
         reader.back().unwrap();
 
-        assert_next_line!(reader, "testing this\n");
+        assert_next_line!(reader, "testing this");
     }
 }
