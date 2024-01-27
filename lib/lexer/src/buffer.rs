@@ -34,7 +34,7 @@ impl LexerBufferReader {
         }
 
         let read_size = self.buffer.read_line(buf)?;
-        *buf = std::mem::take(buf).replace("\n", "");
+        *buf = buf.replace("\n", "");
 
         Ok(read_size)
     }
