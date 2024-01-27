@@ -6,9 +6,7 @@ use crate::token::*;
 use std::{
     fs::File,
     io::{BufReader, Cursor, Error as IOError},
-    iter::Peekable,
     path::Path,
-    vec::IntoIter,
 };
 
 #[derive(ThisError, Debug)]
@@ -32,17 +30,15 @@ pub struct Lexer {
     line: usize,
     column: usize,
     cursor: LexerBufferReader,
-    current_line_iterator: Option<Peekable<IntoIter<char>>>,
     peeked: Option<TokenInfo>,
 }
 
 impl Lexer {
     pub fn new(code: String) -> Self {
         Self {
-            line: 0,
+            line: 1,
             column: 0,
             cursor: LexerBufferReader::new(Box::new(Cursor::new(code))),
-            current_line_iterator: None,
             peeked: None,
         }
     }
@@ -50,10 +46,9 @@ impl Lexer {
     pub fn from_file(path: &str) -> Result<Self, LexerError> {
         match File::open(Path::new(&path)) {
             Ok(file) => Ok(Self {
-                line: 0,
+                line: 1,
                 column: 0,
                 cursor: LexerBufferReader::new(Box::new(BufReader::new(file))),
-                current_line_iterator: None,
                 peeked: None,
             }),
             _ => Err(LexerError::CannotOpenFile(path.to_owned())),
@@ -62,104 +57,88 @@ impl Lexer {
 }
 
 impl Lexer {
-    fn read_next_line(&mut self) -> Result<(), LexerError> {
-        let mut line: String = String::from("");
-        self.cursor.read_line(&mut line)?;
-
-        if line.len() == 0 {
-            return Err(LexerError::EndOfFileReached);
-        }
-
-        let chars = line.chars().collect::<Vec<_>>().into_iter().peekable();
-        self.current_line_iterator = Some(chars);
-        self.line += 1;
-        self.column = 0;
-
-        Ok(())
-    }
-
     pub fn next(&mut self) -> Result<TokenInfo, LexerError> {
         if let Some(token_info) = self.peeked.take() {
             return Ok(token_info);
         }
 
-        if let Some(iterator) = &mut self.current_line_iterator {
-            if iterator.peek().is_none() {
-                self.read_next_line()?;
-
-                return self.next();
-            }
-
-            let mut in_a_string = false; // temp fix to not break out of a string if it has spaces
-            let mut word = String::from("");
-            let mut start_column = self.column + 1;
-
-            while let Some(char) = iterator.next() {
-                self.column += 1;
-                let next_char = *iterator.peek().unwrap_or(&' ');
-                let concatanated = format!("{}{}", char, next_char);
-
-                match char {
-                    c if !in_a_string && c.is_whitespace() => {
-                        if word.len() > 0 {
-                            break;
-                        }
-
-                        start_column += 1;
-
-                        continue;
-                    }
-                    // Check if concatanated with the next character we get an operator
-                    _ if !in_a_string
-                        && next_char != ' '
-                        && Operator::is_operator(&concatanated) =>
-                    {
-                        self.column += 1;
-                        iterator.next();
-
-                        return Ok(TokenInfo {
-                            line: self.line,
-                            start_column,
-                            token: Token::Operator(concatanated.into()),
-                        });
-                    }
-                    c if !in_a_string
-                        && (Token::is_special_char(c) || Operator::is_operator(&c.to_string())) =>
-                    {
-                        return Ok(TokenInfo {
-                            line: self.line,
-                            start_column,
-                            token: c.into(),
-                        });
-                    }
-                    c => {
-                        word.push(c);
-
-                        if c == '"' {
-                            in_a_string = !in_a_string;
-                        }
-
-                        if !in_a_string && Token::is_special_char(next_char) {
-                            break;
-                        }
-                    }
-                };
-            }
-
-            if word.len() == 0 {
-                return self.next();
-            }
-
-            return Ok(TokenInfo {
-                line: self.line,
-                start_column,
-                token: word.into(),
-            });
+        if self.cursor.peek_char().is_none() {
+            return Err(LexerError::EndOfFileReached);
         }
 
-        self.read_next_line()?;
+        let mut in_a_string = false; // temp fix to not break out of a string if it has spaces
+        let mut word = String::from("");
+        let mut start_column = self.column + 1;
+        let start_line = self.line;
 
-        self.next()
+        while let Ok(char) = self.cursor.read_char() {
+            if char == '\n' {
+                self.line += 1;
+                self.column = 0;
+
+                break;
+            }
+
+            self.column += 1;
+            let next_char = *self.cursor.peek_char().unwrap_or(&' ');
+            let concatanated = format!("{}{}", char, next_char);
+
+            match char {
+                c if !in_a_string && c.is_whitespace() => {
+                    if word.len() > 0 {
+                        break;
+                    }
+
+                    start_column += 1;
+
+                    continue;
+                }
+                // Check if concatanated with the next character we get an operator
+                _ if !in_a_string && next_char != ' ' && Operator::is_operator(&concatanated) => {
+                    self.column += 1;
+
+                    self.cursor
+                        .read_char()
+                        .expect("We should have had a value here!");
+
+                    return Ok(TokenInfo {
+                        line: start_line,
+                        start_column,
+                        token: Token::Operator(concatanated.into()),
+                    });
+                }
+                c if !in_a_string
+                    && (Token::is_special_char(c) || Operator::is_operator(&c.to_string())) =>
+                {
+                    return Ok(TokenInfo {
+                        line: start_line,
+                        start_column,
+                        token: c.into(),
+                    });
+                }
+                c => {
+                    word.push(c);
+
+                    if c == '"' {
+                        in_a_string = !in_a_string;
+                    }
+
+                    if !in_a_string && Token::is_special_char(next_char) {
+                        break;
+                    }
+                }
+            };
+        }
+
+        if word.len() == 0 {
+            return self.next();
+        }
+
+        return Ok(TokenInfo {
+            line: start_line,
+            start_column,
+            token: word.into(),
+        });
     }
 
     // Implement peek, without going to the next position
