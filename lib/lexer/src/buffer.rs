@@ -7,6 +7,7 @@ impl<T: Read + Seek> SeekableBufRead for BufReader<T> {}
 
 pub struct LexerBufferReader {
     last_positions: Vec<u64>,
+    peeked_char: Option<char>,
     buffer: Box<dyn SeekableBufRead>,
 }
 
@@ -14,6 +15,7 @@ impl LexerBufferReader {
     pub fn new(buffer: Box<dyn SeekableBufRead>) -> Self {
         Self {
             buffer,
+            peeked_char: None,
             last_positions: vec![],
         }
     }
@@ -38,10 +40,25 @@ impl LexerBufferReader {
     }
 
     pub fn read_char(&mut self) -> IOResult<char> {
+        if let Some(char) = self.peeked_char.take() {
+            return Ok(char);
+        }
+
         let mut char_buf: [u8; 1] = [0; 1]; // we assume our source code is ASCII standard for now
         self.buffer.read_exact(&mut char_buf)?;
 
         Ok(char_buf[0] as char)
+    }
+
+    pub fn peek_char(&mut self) -> Option<&char> {
+        if !self.peeked_char.is_some() {
+            match self.read_char() {
+                Ok(char) => self.peeked_char = Some(char),
+                _ => return None,
+            }
+        }
+
+        self.peeked_char.as_ref()
     }
 
     pub fn back(&mut self) -> Result<u64, ()> {
@@ -177,5 +194,23 @@ mod tests {
         assert_next_char!(reader, 'i');
         assert_next_char!(reader, 'n');
         assert_next_char!(reader, 'g');
+    }
+
+    #[test]
+    fn it_can_peek_next_char() {
+        let mut reader = LexerBufferReader::new(Box::new(Cursor::new(STRING_FIXTURE)));
+
+        assert_eq!(reader.peek_char().unwrap(), &'t');
+        assert_eq!(reader.peek_char().unwrap(), &'t');
+        assert_eq!(reader.peek_char().unwrap(), &'t');
+        assert_next_char!(reader, 't');
+        assert_eq!(reader.peek_char().unwrap(), &'e');
+    }
+
+    #[test]
+    fn it_returns_none_if_cannot_peek_next_char() {
+        let mut reader = LexerBufferReader::new(Box::new(Cursor::new("")));
+
+        assert!(reader.peek_char().is_none());
     }
 }
