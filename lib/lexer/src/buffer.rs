@@ -24,7 +24,13 @@ impl LexerBufferReader {
 impl LexerBufferReader {
     pub fn checkpoint(&mut self) -> Result<(), ()> {
         if let Ok(pos) = self.buffer.stream_position() {
-            self.last_positions.push(pos);
+            // if we have peeked already
+            // set the actual pos to current - 1
+            if self.peeked_char.is_some() {
+                self.last_positions.push(pos - 1);
+            } else {
+                self.last_positions.push(pos);
+            }
 
             Ok(())
         } else {
@@ -64,6 +70,8 @@ impl LexerBufferReader {
     pub fn back(&mut self) -> Result<u64, ()> {
         if let Some(pos) = self.last_positions.pop() {
             let seeked = self.buffer.seek(SeekFrom::Start(pos)).unwrap_or_default();
+
+            self.peeked_char = None;
 
             Ok(seeked)
         } else {
@@ -152,6 +160,23 @@ mod tests {
         assert_next_char!(reader, 't');
         assert_next_char!(reader, 'i');
         assert_next_char!(reader, 'n');
+    }
+
+    #[test]
+    fn it_stores_checkpoint_correctly_even_if_we_have_peeked() {
+        let mut reader = LexerBufferReader::new(Box::new(Cursor::new(STRING_FIXTURE)));
+
+        assert_next_char!(reader, 't');
+        assert_next_char!(reader, 'e');
+        assert_eq!(reader.peek_char().unwrap(), &'s');
+
+        reader.checkpoint().unwrap();
+
+        assert_next_char!(reader, 's');
+
+        reader.back().unwrap();
+
+        assert_next_char!(reader, 's');
     }
 
     #[test]

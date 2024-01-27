@@ -17,6 +17,8 @@ pub enum LexerError {
     FailedToReadNextLine(#[from] IOError),
     #[error("Could not open file: {0}")]
     CannotOpenFile(String),
+    #[error("Could not go back to previous token consumption!")]
+    NoCheckpointToGoBackTo,
 }
 
 #[derive(Debug)]
@@ -31,6 +33,7 @@ pub struct Lexer {
     column: usize,
     cursor: LexerBufferReader,
     peeked: Option<TokenInfo>,
+    checkpoints: Vec<(usize, usize)>,
 }
 
 impl Lexer {
@@ -40,6 +43,7 @@ impl Lexer {
             column: 0,
             cursor: LexerBufferReader::new(Box::new(Cursor::new(code))),
             peeked: None,
+            checkpoints: vec![],
         }
     }
 
@@ -50,9 +54,18 @@ impl Lexer {
                 column: 0,
                 cursor: LexerBufferReader::new(Box::new(BufReader::new(file))),
                 peeked: None,
+                checkpoints: vec![],
             }),
             _ => Err(LexerError::CannotOpenFile(path.to_owned())),
         }
+    }
+}
+
+impl Lexer {
+    fn checkpoint(&mut self) {
+        // we do not care if checkpoint fails
+        self.cursor.checkpoint().unwrap_or_default();
+        self.checkpoints.push((self.line, self.column));
     }
 }
 
@@ -61,6 +74,8 @@ impl Lexer {
         if let Some(token_info) = self.peeked.take() {
             return Ok(token_info);
         }
+
+        self.checkpoint();
 
         if self.cursor.peek_char().is_none() {
             return Err(LexerError::EndOfFileReached);
@@ -154,6 +169,21 @@ impl Lexer {
                 self.peeked.as_ref()
             }
             _ => None,
+        }
+    }
+
+    // Get back to the state before consuming current token
+    pub fn back(&mut self) -> Result<(), LexerError> {
+        match self.cursor.back() {
+            Ok(_) => {
+                self.peeked = None;
+                let (old_line, old_column) = self.checkpoints.pop().unwrap();
+                self.line = old_line;
+                self.column = old_column;
+
+                Ok(())
+            }
+            _ => Err(LexerError::NoCheckpointToGoBackTo),
         }
     }
 }
@@ -319,5 +349,18 @@ mod tests {
         assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "sum");
         assert_token_info!(lexer.peek(), 4, 1, Token::Lparen);
         assert_token_info!(lexer.peek(), 4, 1, Token::Lparen);
+    }
+
+    #[test]
+    fn it_can_get_back_to_before_consuming_the_current_token() {
+        let code = String::from("sum(a + b);");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "sum");
+        assert_token_info!(lexer.next(), 4, 1, Token::Lparen);
+
+        lexer.back().unwrap();
+
+        assert_token_info!(lexer.next(), 4, 1, Token::Lparen);
     }
 }
