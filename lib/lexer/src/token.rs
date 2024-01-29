@@ -52,6 +52,23 @@ impl Token {
 
         regex.captures(word).is_some()
     }
+
+    pub fn is_equal_discrimnant(&self, token: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(token)
+    }
+
+    pub fn extract_value(&self) -> Option<String> {
+        match self {
+            Self::Identifier(value) 
+                | Self::Keyword(value) 
+                | Self::Literal(value) 
+                | Self::Error(value) 
+                | Self::Number(value)
+                => Some(value.to_owned()),
+            Self::Operator(value) => Some(value.to_string()),
+            _ => None,
+        }
+    }
 }
 
 impl Display for Token {
@@ -172,5 +189,23 @@ mod tests {
         let token: Token = character.into();
 
         assert_eq!(token, expected);
+    }
+
+    #[test]
+    fn it_can_check_the_kind_of_the_tokens_without_the_value() {
+        let token = Token::Keyword("test".to_string());
+        let token2 = Token::Keyword("testing".to_owned());
+
+        assert_ne!(token, token2);
+        assert!(token.is_equal_discrimnant(&token2));
+    }
+
+    #[test]
+    fn it_can_check_the_kind_of_the_tokens_without_the_value_and_return_false_if_the_tokens_are_of_different_type() {
+        let token = Token::Keyword("test".to_owned());
+        let token2 = Token::Identifier("testing".to_owned());
+
+        assert_ne!(token, token2);
+        assert!(!token.is_equal_discrimnant(&token2));
     }
 }
