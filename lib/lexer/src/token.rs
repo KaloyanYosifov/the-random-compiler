@@ -222,6 +222,7 @@ mod tests {
     #[case("19.5", Token::Number("19.5".to_owned()))]
     #[case("testing", Token::Identifier("testing".to_owned()))]
     #[case("test", Token::Identifier("test".to_owned()))]
+    #[case("int", Token::Keyword("int".to_owned()))]
     #[case("testing.testing_again", Token::Identifier("testing.testing_again".to_owned()))]
     #[case("\"Hello there\"", Token::Literal("Hello there".to_owned()))]
     #[case("=", Token::Assignment)]
@@ -251,6 +252,23 @@ mod tests {
         assert_eq!(token, expected);
     }
 
+    #[rstest]
+    #[case("+", TokenClass::Operator)]
+    #[case("19", TokenClass::Number)]
+    #[case("testing", TokenClass::Identifier)]
+    #[case("int", TokenClass::Keyword)]
+    #[case("\"Hello there\"", TokenClass::Literal)]
+    #[case("=", TokenClass::Assignment)]
+    #[case("(", TokenClass::Lparen)]
+    #[case(")", TokenClass::Rparen)]
+    #[case("{", TokenClass::LCurly)]
+    #[case("}", TokenClass::RCurly)]
+    fn it_can_compare_a_token_and_a_token_class(#[case] word: &str, #[case] expected: TokenClass) {
+        let token: Token = word.into();
+
+        assert_eq!(token, expected);
+    }
+
     #[test]
     fn it_can_check_the_kind_of_the_tokens_without_the_value() {
         let token = Token::Keyword("test".to_string());
@@ -267,5 +285,10 @@ mod tests {
 
         assert_ne!(token, token2);
         assert!(!token.is_equal_discrimnant(&token2));
+    }
+
+    #[test]
+    fn it_returns_false_if_token_and_token_class_do_not_match() {
+        assert_ne!(Token::Keyword("test".to_owned()), TokenClass::Identifier);
     }
 }
