@@ -267,6 +267,7 @@ mod tests {
         let token: Token = word.into();
 
         assert_eq!(token, expected);
+        assert_eq!(token.to_token_class(), expected);
     }
 
     #[test]
@@ -289,6 +290,10 @@ mod tests {
 
     #[test]
     fn it_returns_false_if_token_and_token_class_do_not_match() {
-        assert_ne!(Token::Keyword("test".to_owned()), TokenClass::Identifier);
+        let token = Token::Keyword("test".to_owned());
+        let token_class = TokenClass::Identifier;
+
+        assert_ne!(token, token_class);
+        assert_ne!(token.to_token_class(), token_class);
     }
 }
