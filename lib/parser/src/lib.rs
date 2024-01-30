@@ -1,6 +1,6 @@
 use lexer::{
     lexer::{Lexer, LexerError, TokenInfo},
-    token::Token,
+    token::{Token, TokenClass},
 };
 use thiserror::Error as ThisError;
 
@@ -39,21 +39,37 @@ impl Parser {
 }
 
 impl Parser {
-    fn eat(&mut self, token: Token) -> Result<TokenInfo, ParserError> {
-        let next_token = self.lexer.next()?;
+    fn eat(&mut self, token: TokenClass) -> Result<ParseNode, ParserError> {
+        let token_info = self.lexer.next()?;
 
-        if next_token.token.is_equal_discrimnant(&token) {
-            Ok(next_token)
+        if token_info.token == token {
+            Ok(ParseNode {
+                loc: Loc {
+                    line: token_info.line,
+                    column: token_info.start_column,
+                },
+                value: token_info.token.extract_value(),
+                kind: token.to_string(),
+                children: vec![],
+            })
         } else {
             Err(ParserError::UnexpectedToken)
         }
     }
 
-    fn eat_specific(&mut self, token: Token) -> Result<TokenInfo, ParserError> {
-        let next_token = self.lexer.next()?;
+    fn eat_specific(&mut self, token: Token) -> Result<ParseNode, ParserError> {
+        let token_info = self.lexer.next()?;
 
-        if next_token.token == token {
-            Ok(next_token)
+        if token_info.token == token {
+            Ok(ParseNode {
+                loc: Loc {
+                    line: token_info.line,
+                    column: token_info.start_column,
+                },
+                value: token_info.token.extract_value(),
+                kind: token_info.token.to_token_class().to_string(),
+                children: vec![],
+            })
         } else {
             Err(ParserError::UnexpectedToken)
         }
@@ -66,51 +82,11 @@ impl Parser {
             value: None,
             children: vec![],
         };
-        let keyword = self.eat(Token::Keyword("".to_owned()))?;
-        expression.children.push(ParseNode {
-            loc: Loc {
-                line: keyword.line,
-                column: keyword.start_column,
-            },
-            value: keyword.token.extract_value(),
-            kind: "Keyword".to_owned(),
-            children: vec![],
-        });
-
-        let identifier = self.eat(Token::Identifier("".to_owned()))?;
-        expression.children.push(ParseNode {
-            loc: Loc {
-                line: identifier.line,
-                column: identifier.start_column,
-            },
-            value: identifier.token.extract_value(),
-            kind: "Identifier".to_owned(),
-            children: vec![],
-        });
-
-        let assignment = self.eat(Token::Assignment)?;
-        expression.children.push(ParseNode {
-            loc: Loc {
-                line: assignment.line,
-                column: assignment.start_column,
-            },
-            value: None,
-            kind: "Assignment".to_owned(),
-            children: vec![],
-        });
-
-        let number = self.eat(Token::Number("".to_owned()))?;
-        expression.children.push(ParseNode {
-            loc: Loc {
-                line: number.line,
-                column: number.start_column,
-            },
-            value: number.token.extract_value(),
-            kind: "Number".to_owned(),
-            children: vec![],
-        });
-
-        self.eat(Token::Semi)?;
+        expression.children.push(self.eat(TokenClass::Keyword)?);
+        expression.children.push(self.eat(TokenClass::Identifier)?);
+        expression.children.push(self.eat(TokenClass::Assignment)?);
+        expression.children.push(self.eat(TokenClass::Number)?);
+        expression.children.push(self.eat(TokenClass::Semi)?);
 
         Ok(expression)
     }

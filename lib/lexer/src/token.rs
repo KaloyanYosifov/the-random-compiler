@@ -8,6 +8,43 @@ const KEYWORDS: &'static [&str] = &[
 ];
 
 #[derive(PartialEq, Eq, Debug)]
+pub enum TokenClass {
+    Identifier,
+    Keyword,
+    Operator,
+    Literal,
+    Number,
+    Lparen,
+    Rparen,
+    LCurly,
+    RCurly,
+    Semi,
+    Assignment,
+    Error,
+}
+
+impl Display for TokenClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = match self {
+            Self::Identifier => "Identifier",
+            Self::Keyword => "Keyword",
+            Self::Operator => "Operator",
+            Self::Literal => "Literal",
+            Self::Number => "Number",
+            Self::Lparen => "LParen",
+            Self::Rparen => "RParen",
+            Self::LCurly => "LCurly",
+            Self::RCurly => "RCurly",
+            Self::Semi => "Semi",
+            Self::Assignment => "Assignment",
+            Self::Error => "Error",
+        }.to_string();
+
+        write!(f, "{}", value)
+    }
+}
+
+#[derive(PartialEq, Eq, Debug)]
 pub enum Token {
     Identifier(String),
     Keyword(String),
@@ -57,6 +94,23 @@ impl Token {
         std::mem::discriminant(self) == std::mem::discriminant(token)
     }
 
+    pub fn to_token_class(&self) -> TokenClass {
+        match &self {
+            Self::Identifier(_) => TokenClass::Identifier,
+            Self::Keyword(_) => TokenClass::Keyword,
+            Self::Operator(_) => TokenClass::Operator,
+            Self::Literal(_) => TokenClass::Literal,
+            Self::Number(_) => TokenClass::Number,
+            Self::Lparen => TokenClass::Lparen,
+            Self::Rparen => TokenClass::Rparen,
+            Self::LCurly => TokenClass::LCurly,
+            Self::RCurly => TokenClass::RCurly,
+            Self::Semi => TokenClass::Semi,
+            Self::Assignment => TokenClass::Assignment,
+            Self::Error(_) => TokenClass::Error,
+        }
+    }
+
     pub fn extract_value(&self) -> Option<String> {
         match self {
             Self::Identifier(value) 
@@ -68,6 +122,12 @@ impl Token {
             Self::Operator(value) => Some(value.to_string()),
             _ => None,
         }
+    }
+}
+
+impl PartialEq<TokenClass> for Token {
+    fn eq(&self, other: &TokenClass) -> bool {
+        &self.to_token_class() == other
     }
 }
 
