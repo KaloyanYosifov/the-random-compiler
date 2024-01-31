@@ -1,3 +1,5 @@
+use std::mem::size_of;
+
 use lexer::{
     lexer::{Lexer, LexerError},
     token::{Token, TokenClass},
@@ -20,6 +22,34 @@ pub struct ParseNode {
     pub children: Vec<Self>,
 }
 
+impl ParseNode {
+    pub fn add_child(&mut self, node: ParseNode) {
+        if self.children.len() == 0 {
+            self.loc = node.loc.clone();
+        }
+
+        self.children.push(node);
+    }
+
+    pub fn print_tree(&self) {
+        self.inner_print_tree(0)
+    }
+
+    fn inner_print_tree(&self, padding: i32) {
+        let pad_str: String = (0..padding).map(|_| " ").collect();
+
+        if let Some(value) = &self.value {
+            println!("{}{}: {}", pad_str, self.kind, value);
+        } else {
+            println!("{}{}", pad_str, self.kind);
+        }
+
+        for child in &self.children {
+            child.inner_print_tree(padding + 2);
+        }
+    }
+}
+
 pub struct Parser {
     lexer: Lexer,
 }
@@ -28,8 +58,8 @@ pub struct Parser {
 pub enum ParserError {
     #[error("Lexer has failed!")]
     LexerError(#[from] LexerError),
-    #[error("Unexpected token!")]
-    UnexpectedToken,
+    #[error("Unexpected token: {0}!")]
+    UnexpectedToken(String),
 }
 
 impl Parser {
@@ -39,28 +69,57 @@ impl Parser {
 }
 
 impl Parser {
-    fn eat(&mut self, token: TokenClass) -> Result<ParseNode, ParserError> {
-        let token_info = self.lexer.next()?;
+    fn eat(&mut self, token: &TokenClass) -> Result<ParseNode, ParserError> {
+        let peeked = self.lexer.peek();
+        let mut node = None;
 
-        if token_info.token == token {
-            Ok(ParseNode {
-                loc: Loc {
-                    line: token_info.line,
-                    column: token_info.start_column,
-                },
-                value: token_info.token.extract_value(),
-                kind: token.to_string(),
-                children: vec![],
-            })
+        if let Some(token_info) = peeked {
+            if &token_info.token == token {
+                node = Some(ParseNode {
+                    loc: Loc {
+                        line: token_info.line,
+                        column: token_info.start_column,
+                    },
+                    value: token_info.token.extract_value(),
+                    kind: token.to_string(),
+                    children: vec![],
+                });
+            }
+        }
+
+        if let Some(node) = node {
+            self.lexer.next()?;
+
+            Ok(node)
         } else {
-            Err(ParserError::UnexpectedToken)
+            Err(ParserError::UnexpectedToken(token.to_string()))
         }
     }
 
-    fn eat_specific(&mut self, token: Token) -> Result<ParseNode, ParserError> {
+    fn eat_any_of(&mut self, tokens: &[TokenClass]) -> Result<ParseNode, ParserError> {
+        for token in tokens {
+            if let Ok(node) = self.eat(&token) {
+                return Ok(node);
+            }
+        }
+
+        let mut buffer = String::from("");
+
+        for token in tokens {
+            if buffer.len() != 0 {
+                buffer.push_str(" or ");
+            }
+
+            buffer.push_str(&token.to_string());
+        }
+
+        Err(ParserError::UnexpectedToken(buffer))
+    }
+
+    fn eat_specific(&mut self, token: &Token) -> Result<ParseNode, ParserError> {
         let token_info = self.lexer.next()?;
 
-        if token_info.token == token {
+        if &token_info.token == token {
             Ok(ParseNode {
                 loc: Loc {
                     line: token_info.line,
@@ -71,20 +130,63 @@ impl Parser {
                 children: vec![],
             })
         } else {
-            Err(ParserError::UnexpectedToken)
+            Err(ParserError::UnexpectedToken(token.to_string()))
         }
     }
 
-    fn is_next(&mut self, token: TokenClass) -> bool {
+    fn is_next(&mut self, token: &TokenClass) -> bool {
         if let Some(token_info) = self.lexer.peek() {
-            token_info.token == token
+            &token_info.token == token
         } else {
             false
         }
     }
 
-    fn parse_statement(&mut self) -> ParserResult {
+    fn is_next_any_of(&mut self, tokens: &[TokenClass]) -> bool {
+        for token in tokens {
+            if self.is_next(token) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    fn parse_expression(&mut self) -> ParserResult {
         let mut expression = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "Expression".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        if self.is_next(&TokenClass::Lparen) {
+            let l_paren = self.eat(&TokenClass::Lparen)?;
+            expression.loc = l_paren.loc.clone();
+
+            expression.add_child(l_paren);
+            expression.add_child(self.parse_expression()?);
+            expression.add_child(self.eat(&TokenClass::Rparen)?);
+
+            return Ok(expression);
+        }
+
+        expression.add_child(self.eat_any_of(&[
+            TokenClass::Identifier,
+            TokenClass::Number,
+            TokenClass::Literal,
+        ])?);
+
+        if self.is_next(&TokenClass::Operator) {
+            expression.add_child(self.eat(&TokenClass::Operator)?);
+            expression.add_child(self.parse_expression()?);
+        }
+
+        Ok(expression)
+    }
+
+    fn parse_statement(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
             kind: "Statement".to_owned(),
             value: None,
@@ -93,27 +195,24 @@ impl Parser {
 
         // check first if we have an identifier next
         // if so, then we have a function call
-        if self.is_next(TokenClass::Identifier) {
-            let identifier = self.eat(TokenClass::Identifier)?;
-            expression.loc = identifier.loc.clone();
-
-            expression.children.push(identifier);
-            expression.children.push(self.eat(TokenClass::Lparen)?);
-            // parse expression
-            expression.children.push(self.eat(TokenClass::Rparen)?);
-            expression.children.push(self.eat(TokenClass::Semi)?);
+        if self.is_next(&TokenClass::Identifier) {
+            statement.add_child(self.eat(&TokenClass::Identifier)?);
+            statement.add_child(self.eat(&TokenClass::Lparen)?);
+            statement.add_child(self.parse_expression()?);
+            statement.add_child(self.eat(&TokenClass::Rparen)?);
+            statement.add_child(self.eat(&TokenClass::Semi)?);
         } else {
-            let keyword = self.eat(TokenClass::Keyword)?;
-            expression.loc = keyword.loc.clone();
+            let keyword = self.eat(&TokenClass::Keyword)?;
+            statement.loc = keyword.loc.clone();
 
-            expression.children.push(keyword);
-            expression.children.push(self.eat(TokenClass::Identifier)?);
-            expression.children.push(self.eat(TokenClass::Assignment)?);
-            expression.children.push(self.eat(TokenClass::Number)?);
-            expression.children.push(self.eat(TokenClass::Semi)?);
+            statement.add_child(keyword);
+            statement.add_child(self.eat(&TokenClass::Identifier)?);
+            statement.add_child(self.eat(&TokenClass::Assignment)?);
+            statement.add_child(self.parse_expression()?);
+            statement.add_child(self.eat(&TokenClass::Semi)?);
         }
 
-        Ok(expression)
+        Ok(statement)
     }
 
     fn parse_program(&mut self) -> ParserResult {
@@ -124,10 +223,12 @@ impl Parser {
             children: vec![],
         };
 
-        root.children.push(self.parse_statement()?);
-        // while let Some(_) = self.lexer.peek() {
-        //     root.children.push(self.parse_expression()?);
-        // }
+        // root.add_child(self.parse_statement()?);
+        // root.add_child(self.parse_statement()?);
+        // root.add_child(self.parse_statement()?);
+        while let Some(_) = self.lexer.peek() {
+            root.add_child(self.parse_statement()?);
+        }
 
         Ok(root)
     }
