@@ -138,7 +138,10 @@ impl Lexer {
                         in_a_string = !in_a_string;
                     }
 
-                    if !in_a_string && Token::is_special_char(next_char) {
+                    if !in_a_string
+                        && (Token::is_special_char(next_char)
+                            || Operator::is_operator(&next_char.to_string()))
+                    {
                         break;
                     }
                 }
@@ -221,6 +224,26 @@ mod tests {
         assert_token_info!(lexer.next(), 10, 1, Token::Identifier(x) if x == "y");
         assert_token_info!(lexer.next(), 11, 1, Token::Rparen);
         assert_token_info!(lexer.next(), 13, 1, Token::LCurly);
+    }
+
+    #[test]
+    fn it_can_parse_increment() {
+        let code = String::from("a++;");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "a");
+        assert_token_info!(lexer.next(), 2, 1, Token::Operator(x) if matches!(x, Operator::Increment));
+        assert_token_info!(lexer.next(), 4, 1, Token::Semi);
+    }
+
+    #[test]
+    fn it_can_parse_decrement() {
+        let code = String::from("a--;");
+        let mut lexer = Lexer::new(code);
+
+        assert_token_info!(lexer.next(), 1, 1, Token::Identifier(x) if x == "a");
+        assert_token_info!(lexer.next(), 2, 1, Token::Operator(x) if matches!(x, Operator::Decrement));
+        assert_token_info!(lexer.next(), 4, 1, Token::Semi);
     }
 
     #[test]

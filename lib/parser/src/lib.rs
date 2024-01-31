@@ -1,7 +1,6 @@
-use std::mem::size_of;
-
 use lexer::{
     lexer::{Lexer, LexerError},
+    operator::Operator,
     token::{Token, TokenClass},
 };
 use thiserror::Error as ThisError;
@@ -128,7 +127,7 @@ impl Parser {
         Err(ParserError::UnexpectedToken(buffer, actual_token))
     }
 
-    fn eat_specific(&mut self, token: &Token) -> Result<ParseNode, ParserError> {
+    fn eat_exact(&mut self, token: &Token) -> Result<ParseNode, ParserError> {
         let token_info = self.lexer.next()?;
 
         if &token_info.token == token {
@@ -149,12 +148,30 @@ impl Parser {
         }
     }
 
+    fn is_next_exact(&mut self, token: &Token) -> bool {
+        if let Some(token_info) = self.lexer.peek() {
+            &token_info.token == token
+        } else {
+            false
+        }
+    }
+
     fn is_next(&mut self, token: &TokenClass) -> bool {
         if let Some(token_info) = self.lexer.peek() {
             &token_info.token == token
         } else {
             false
         }
+    }
+
+    fn is_next_exact_any_of(&mut self, tokens: &[Token]) -> bool {
+        for token in tokens {
+            if self.is_next_exact(token) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     fn is_next_any_of(&mut self, tokens: &[TokenClass]) -> bool {
@@ -166,7 +183,9 @@ impl Parser {
 
         return false;
     }
+}
 
+impl Parser {
     fn parse_expression(&mut self) -> ParserResult {
         let mut expression = ParseNode {
             loc: Loc { line: 1, column: 1 },
@@ -191,46 +210,154 @@ impl Parser {
             ])?);
         }
 
-        if self.is_next(&TokenClass::Operator) {
+        if self.is_next_exact(&Token::Operator(Operator::Increment)) {
             expression.add_child(self.eat(&TokenClass::Operator)?);
+        } else if self.is_next(&TokenClass::Operator) {
+            expression.add_child(self.eat(&TokenClass::Operator)?);
+
             expression.add_child(self.parse_expression()?);
         }
 
         Ok(expression)
     }
 
-    fn parse_statement(&mut self) -> ParserResult {
-        let mut statement = ParseNode {
+    fn parse_block(&mut self) -> ParserResult {
+        let mut block = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "Statement".to_owned(),
+            kind: "Block".to_owned(),
             value: None,
             children: vec![],
         };
 
-        // check first if we have an identifier next
-        // if so, then we have a function call
-        if self.is_next(&TokenClass::Identifier) {
-            statement.add_child(self.eat(&TokenClass::Identifier)?);
-            statement.add_child(self.eat(&TokenClass::Lparen)?);
+        block.add_child(self.eat(&TokenClass::LCurly)?);
+
+        while !self.is_next(&TokenClass::RCurly) {
+            block.add_child(self.parse_statement()?);
+        }
+
+        block.add_child(self.eat(&TokenClass::RCurly)?);
+
+        Ok(block)
+    }
+
+    fn parse_control_flow_block(&mut self) -> ParserResult {
+        let mut block = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "ControlFlowBlock".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        block.add_child(self.eat(&TokenClass::Lparen)?);
+        block.add_child(self.parse_expression()?);
+        block.add_child(self.eat(&TokenClass::Rparen)?);
+        block.add_child(self.parse_block()?);
+
+        Ok(block)
+    }
+
+    fn parse_for_loop_statement(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "ForLoopStatement".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        statement.add_child(self.eat(&TokenClass::Keyword)?);
+        statement.add_child(self.eat(&TokenClass::Lparen)?);
+        statement.add_child(self.parse_assignment_statement()?);
+        statement.add_child(self.parse_expression()?);
+        statement.add_child(self.eat(&TokenClass::Semi)?);
+        statement.add_child(self.parse_expression()?);
+        statement.add_child(self.eat(&TokenClass::Rparen)?);
+        statement.add_child(self.parse_block()?);
+
+        Ok(statement)
+    }
+
+    fn parse_condition_statement(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "ConditionStatement".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        statement.add_child(self.eat(&TokenClass::Keyword)?);
+        statement.add_child(self.parse_control_flow_block()?);
+
+        Ok(statement)
+    }
+
+    fn parse_assignment_statement(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "AssignmentStatement".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        statement.add_child(self.eat(&TokenClass::Keyword)?);
+        statement.add_child(self.eat(&TokenClass::Identifier)?);
+        statement.add_child(self.eat(&TokenClass::Assignment)?);
+
+        while !self.is_next(&TokenClass::Semi) {
             statement.add_child(self.parse_expression()?);
-            statement.add_child(self.eat(&TokenClass::Rparen)?);
-            statement.add_child(self.eat(&TokenClass::Semi)?);
+        }
+
+        statement.add_child(self.eat(&TokenClass::Semi)?);
+
+        Ok(statement)
+    }
+
+    fn parse_keyword_statement(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "KeywordStatement".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        let conditional_statements = [
+            Token::Keyword("if".to_owned()),
+            Token::Keyword("while".to_owned()),
+        ];
+
+        if self.is_next_exact_any_of(&conditional_statements) {
+            statement.add_child(self.parse_condition_statement()?);
+        } else if self.is_next_exact(&Token::Keyword("for".to_owned())) {
+            statement.add_child(self.parse_for_loop_statement()?);
         } else {
-            let keyword = self.eat(&TokenClass::Keyword)?;
-            statement.loc = keyword.loc.clone();
-
-            statement.add_child(keyword);
-            statement.add_child(self.eat(&TokenClass::Identifier)?);
-            statement.add_child(self.eat(&TokenClass::Assignment)?);
-
-            while !self.is_next(&TokenClass::Semi) {
-                statement.add_child(self.parse_expression()?);
-            }
-
-            statement.add_child(self.eat(&TokenClass::Semi)?);
+            statement.add_child(self.parse_assignment_statement()?);
         }
 
         Ok(statement)
+    }
+
+    fn parse_function_call_statement(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "FunctionCallStatement".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        statement.add_child(self.eat(&TokenClass::Identifier)?);
+        statement.add_child(self.eat(&TokenClass::Lparen)?);
+        statement.add_child(self.parse_expression()?);
+        statement.add_child(self.eat(&TokenClass::Rparen)?);
+        statement.add_child(self.eat(&TokenClass::Semi)?);
+
+        Ok(statement)
+    }
+
+    fn parse_statement(&mut self) -> ParserResult {
+        if self.is_next(&TokenClass::Keyword) {
+            self.parse_keyword_statement()
+        } else {
+            self.parse_function_call_statement()
+        }
     }
 
     fn parse_program(&mut self) -> ParserResult {

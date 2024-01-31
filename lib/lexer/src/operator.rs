@@ -13,12 +13,16 @@ pub enum Operator {
     LesserEqual,
     Greater,
     GreaterEqual,
+    Increment,
+    Decrement,
 }
 
 impl Operator {
     pub fn is_operator(op: &str) -> bool {
         match op {
-            "+" | "-" | "/" | "*" | "==" | "<" | "<=" | ">" | ">=" | "&&" | "||" => true,
+            "+" | "-" | "/" | "*" | "==" | "<" | "<=" | ">" | ">=" | "&&" | "||" | "++" | "--" => {
+                true
+            }
             _ => false,
         }
     }
@@ -38,6 +42,8 @@ impl Display for Operator {
             Self::LesserEqual => "<=".to_owned(),
             Self::Greater => ">".to_owned(),
             Self::GreaterEqual => ">=".to_owned(),
+            Self::Increment => "++".to_owned(),
+            Self::Decrement => "--".to_owned(),
         };
 
         write!(f, "{}", to_display)
@@ -52,6 +58,8 @@ impl From<&str> for Operator {
             ">=" => Self::GreaterEqual,
             "&&" => Self::And,
             "||" => Self::Or,
+            "++" => Self::Increment,
+            "--" => Self::Decrement,
             word => match word.chars().next().unwrap_or(' ') {
                 '+' => Self::Plus,
                 '-' => Self::Minus,

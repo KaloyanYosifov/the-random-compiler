@@ -1,9 +1,11 @@
 ```
 P -> S
-S -> KV=E
+S -> A
    | V(E)
    | Q 
 Q -> K(E){S}
+A -> KV=E
+F -> for(A;E;E){S} 
 E -> I+E
    | I*E
    | I/E
@@ -29,6 +31,8 @@ E -> I+E
    | (E)<E
    | (E)&&E
    | (E)||E
+   | I++
+   | I--
    | I
 V -> id(.id)*
 L -> ".*"
