@@ -14,11 +14,30 @@ E -> I+E
    | I!=E 
    | I>E 
    | I<E 
+   | I&&E
+   | I||E
    | (E)
+   | (E)+E
+   | (E)*E
+   | (E)/E
+   | (E)-E
+   | (E)==E
+   | (E)>=E
+   | (E)<=E
+   | (E)!=E
+   | (E)>E
+   | (E)<E
+   | (E)&&E
+   | (E)||E
    | I
 V -> id(.id)*
+L -> ".*"
+B -> true
+   | false
 I -> V
    | N
+   | L
+   | B
 N -> digit+
    | digit+.digit+
 K -> int

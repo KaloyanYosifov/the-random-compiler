@@ -3,6 +3,8 @@ use std::fmt::Display;
 #[derive(PartialEq, Eq, Debug)]
 pub enum Operator {
     Plus,
+    Or,
+    And,
     Minus,
     Mul,
     Div,
@@ -16,7 +18,7 @@ pub enum Operator {
 impl Operator {
     pub fn is_operator(op: &str) -> bool {
         match op {
-            "+" | "-" | "/" | "*" | "==" | "<" | "<=" | ">" | ">=" => true,
+            "+" | "-" | "/" | "*" | "==" | "<" | "<=" | ">" | ">=" | "&&" | "||" => true,
             _ => false,
         }
     }
@@ -25,6 +27,8 @@ impl Operator {
 impl Display for Operator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let to_display = match self {
+            Self::And => "&&".to_owned(),
+            Self::Or => "||".to_owned(),
             Self::Plus => "+".to_owned(),
             Self::Minus => "-".to_owned(),
             Self::Mul => "*".to_owned(),
@@ -46,6 +50,8 @@ impl From<&str> for Operator {
             "==" => Self::Equal,
             "<=" => Self::LesserEqual,
             ">=" => Self::GreaterEqual,
+            "&&" => Self::And,
+            "||" => Self::Or,
             word => match word.chars().next().unwrap_or(' ') {
                 '+' => Self::Plus,
                 '-' => Self::Minus,

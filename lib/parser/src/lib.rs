@@ -58,8 +58,8 @@ pub struct Parser {
 pub enum ParserError {
     #[error("Lexer has failed!")]
     LexerError(#[from] LexerError),
-    #[error("Unexpected token: {0}!")]
-    UnexpectedToken(String),
+    #[error("Unexpected token: {0} actual was: {1}!")]
+    UnexpectedToken(String, String),
 }
 
 impl Parser {
@@ -72,8 +72,11 @@ impl Parser {
     fn eat(&mut self, token: &TokenClass) -> Result<ParseNode, ParserError> {
         let peeked = self.lexer.peek();
         let mut node = None;
+        let mut actual_token = String::from("Unknown");
 
         if let Some(token_info) = peeked {
+            actual_token = token_info.token.to_string();
+
             if &token_info.token == token {
                 node = Some(ParseNode {
                     loc: Loc {
@@ -92,7 +95,10 @@ impl Parser {
 
             Ok(node)
         } else {
-            Err(ParserError::UnexpectedToken(token.to_string()))
+            Err(ParserError::UnexpectedToken(
+                token.to_string(),
+                actual_token,
+            ))
         }
     }
 
@@ -113,7 +119,13 @@ impl Parser {
             buffer.push_str(&token.to_string());
         }
 
-        Err(ParserError::UnexpectedToken(buffer))
+        let mut actual_token = String::from("Unknown");
+
+        if let Some(token_info) = self.lexer.peek() {
+            actual_token = token_info.token.to_string();
+        }
+
+        Err(ParserError::UnexpectedToken(buffer, actual_token))
     }
 
     fn eat_specific(&mut self, token: &Token) -> Result<ParseNode, ParserError> {
@@ -130,7 +142,10 @@ impl Parser {
                 children: vec![],
             })
         } else {
-            Err(ParserError::UnexpectedToken(token.to_string()))
+            Err(ParserError::UnexpectedToken(
+                token.to_string(),
+                token_info.token.to_string(),
+            ))
         }
     }
 
@@ -167,15 +182,14 @@ impl Parser {
             expression.add_child(l_paren);
             expression.add_child(self.parse_expression()?);
             expression.add_child(self.eat(&TokenClass::Rparen)?);
-
-            return Ok(expression);
+        } else {
+            expression.add_child(self.eat_any_of(&[
+                TokenClass::Identifier,
+                TokenClass::Boolean,
+                TokenClass::Number,
+                TokenClass::Literal,
+            ])?);
         }
-
-        expression.add_child(self.eat_any_of(&[
-            TokenClass::Identifier,
-            TokenClass::Number,
-            TokenClass::Literal,
-        ])?);
 
         if self.is_next(&TokenClass::Operator) {
             expression.add_child(self.eat(&TokenClass::Operator)?);
@@ -208,7 +222,11 @@ impl Parser {
             statement.add_child(keyword);
             statement.add_child(self.eat(&TokenClass::Identifier)?);
             statement.add_child(self.eat(&TokenClass::Assignment)?);
-            statement.add_child(self.parse_expression()?);
+
+            while !self.is_next(&TokenClass::Semi) {
+                statement.add_child(self.parse_expression()?);
+            }
+
             statement.add_child(self.eat(&TokenClass::Semi)?);
         }
 
@@ -223,9 +241,6 @@ impl Parser {
             children: vec![],
         };
 
-        // root.add_child(self.parse_statement()?);
-        // root.add_child(self.parse_statement()?);
-        // root.add_child(self.parse_statement()?);
         while let Some(_) = self.lexer.peek() {
             root.add_child(self.parse_statement()?);
         }

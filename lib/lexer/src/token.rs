@@ -4,7 +4,7 @@ use std::fmt::Display;
 
 const KEYWORDS: &'static [&str] = &[
     "if", "elif", "else", "while", "for", "return", "continue", "break", "int", "bool", "string",
-    "char", "float",
+    "char", "float"
 ];
 
 #[derive(PartialEq, Eq, Debug)]
@@ -14,6 +14,7 @@ pub enum TokenClass {
     Operator,
     Literal,
     Number,
+    Boolean,
     Lparen,
     Rparen,
     LCurly,
@@ -27,6 +28,7 @@ impl Display for TokenClass {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = match self {
             Self::Identifier => "Identifier",
+            Self::Boolean => "Boolean",
             Self::Keyword => "Keyword",
             Self::Operator => "Operator",
             Self::Literal => "Literal",
@@ -51,6 +53,7 @@ pub enum Token {
     Operator(Operator),
     Literal(String),
     Number(String),
+    Boolean(String),
     Lparen,
     Rparen,
     LCurly,
@@ -90,6 +93,12 @@ impl Token {
         regex.captures(word).is_some()
     }
 
+    pub fn is_boolean(word: &str) -> bool {
+        let regex = Regex::new(r#"^true|false$"#).unwrap();
+
+        regex.captures(word).is_some()
+    }
+
     pub fn is_equal_discrimnant(&self, token: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(token)
     }
@@ -101,6 +110,7 @@ impl Token {
             Self::Operator(_) => TokenClass::Operator,
             Self::Literal(_) => TokenClass::Literal,
             Self::Number(_) => TokenClass::Number,
+            Self::Boolean(_) => TokenClass::Boolean,
             Self::Lparen => TokenClass::Lparen,
             Self::Rparen => TokenClass::Rparen,
             Self::LCurly => TokenClass::LCurly,
@@ -118,6 +128,7 @@ impl Token {
                 | Self::Literal(value) 
                 | Self::Error(value) 
                 | Self::Number(value)
+                | Self::Boolean(value)
                 => Some(value.to_owned()),
             Self::Operator(value) => Some(value.to_string()),
             _ => None,
@@ -139,6 +150,7 @@ impl Display for Token {
             Self::Operator(operator) => format!("OPERATOR: {}", operator),
             Self::Literal(value) => format!("STRING: {}", value),
             Self::Number(value) => format!("NUMBER: {}", value),
+            Self::Boolean(value) => format!("Boolean: {}", value),
             Self::Lparen => "(".to_owned(),
             Self::Rparen => ")".to_owned(),
             Self::LCurly => "{".to_owned(),
@@ -175,6 +187,7 @@ impl From<&str> for Token {
         match word {
             word if Self::is_keyword(word) => Self::Keyword(word.to_owned()),
             word if Operator::is_operator(word) => Self::Operator(word.into()),
+            word if Self::is_boolean(word) => Self::Boolean(word.into()),
             word if Self::is_string(word) => Self::Literal(word[1..word.len() - 1].into()),
             word if Self::is_number(word) => Self::Number(word.into()),
             word if word.len() == 1 => {
