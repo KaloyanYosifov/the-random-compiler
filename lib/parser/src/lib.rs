@@ -214,7 +214,6 @@ impl Parser {
             expression.add_child(self.eat(&TokenClass::Operator)?);
         } else if self.is_next(&TokenClass::Operator) {
             expression.add_child(self.eat(&TokenClass::Operator)?);
-
             expression.add_child(self.parse_expression()?);
         }
 
@@ -311,28 +310,97 @@ impl Parser {
         Ok(statement)
     }
 
-    fn parse_keyword_statement(&mut self) -> ParserResult {
+    fn parse_argument(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "KeywordStatement".to_owned(),
+            kind: "Argument".to_owned(),
             value: None,
             children: vec![],
         };
 
+        statement.add_child(self.eat(&TokenClass::Keyword)?);
+        statement.add_child(self.eat(&TokenClass::Identifier)?);
+
+        Ok(statement)
+    }
+
+    fn parse_arguments(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "Arguments".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        statement.add_child(self.eat(&TokenClass::Lparen)?);
+
+        while !self.is_next(&TokenClass::Rparen) {
+            statement.add_child(self.parse_argument()?);
+        }
+
+        statement.add_child(self.eat(&TokenClass::Rparen)?);
+
+        Ok(statement)
+    }
+
+    fn parse_function_definition(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "FunctionDefinition".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        statement.add_child(self.eat_exact(&Token::Keyword("fn".to_owned()))?);
+        statement.add_child(self.eat(&TokenClass::Identifier)?);
+        statement.add_child(self.parse_arguments()?);
+        statement.add_child(self.eat_exact(&Token::Operator(Operator::Pointer))?);
+        statement.add_child(self.eat(&TokenClass::Keyword)?);
+        statement.add_child(self.parse_block()?);
+
+        Ok(statement)
+    }
+
+    fn parse_return_statement(&mut self) -> ParserResult {
+        let mut statement = ParseNode {
+            loc: Loc { line: 1, column: 1 },
+            kind: "ReturnStatement".to_owned(),
+            value: None,
+            children: vec![],
+        };
+
+        statement.add_child(self.eat_exact(&Token::Keyword("return".to_owned()))?);
+
+        while !self.is_next(&TokenClass::Semi) {
+            statement.add_child(self.parse_expression()?);
+        }
+
+        statement.add_child(self.eat(&TokenClass::Semi)?);
+
+        Ok(statement)
+    }
+
+    fn parse_keyword_statement(&mut self) -> ParserResult {
         let conditional_statements = [
             Token::Keyword("if".to_owned()),
             Token::Keyword("while".to_owned()),
         ];
 
-        if self.is_next_exact_any_of(&conditional_statements) {
-            statement.add_child(self.parse_condition_statement()?);
-        } else if self.is_next_exact(&Token::Keyword("for".to_owned())) {
-            statement.add_child(self.parse_for_loop_statement()?);
-        } else {
-            statement.add_child(self.parse_assignment_statement()?);
+        match true {
+            _ if self.is_next_exact_any_of(&conditional_statements) => {
+                self.parse_condition_statement()
+            }
+            _ if self.is_next_exact(&Token::Keyword("for".to_owned())) => {
+                self.parse_for_loop_statement()
+            }
+            _ if self.is_next_exact(&Token::Keyword("fn".to_owned())) => {
+                self.parse_function_definition()
+            }
+            _ if self.is_next_exact(&Token::Keyword("return".to_owned())) => {
+                self.parse_return_statement()
+            }
+            _ => self.parse_assignment_statement(),
         }
-
-        Ok(statement)
     }
 
     fn parse_function_call_statement(&mut self) -> ParserResult {

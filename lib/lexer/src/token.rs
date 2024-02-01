@@ -4,7 +4,7 @@ use std::fmt::Display;
 
 const KEYWORDS: &'static [&str] = &[
     "if", "elif", "else", "while", "for", "return", "continue", "break", "int", "bool", "string",
-    "char", "float"
+    "char", "float", "fn"
 ];
 
 #[derive(PartialEq, Eq, Debug)]

@@ -35,6 +35,16 @@ for (int i = 0; i < 5; i ++) {
     }
 }
 
+fn test() -> bool {
+    return 1 + 3;
+}
+
+fn hello_world(int a, int b, string test) -> bool {
+    System.print(test);
+
+    return a + b;
+}
+
 System.print(a + b);
 System.print(c && testing);
 System.print(c || testing);
