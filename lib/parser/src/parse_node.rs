@@ -1,3 +1,68 @@
+use lexer::token::TokenClass;
+use strum::Display;
+
+#[derive(Debug, PartialEq, Eq, Display)]
+pub enum NodeKind {
+    Block,
+    Program,
+    Expression,
+
+    // Statements
+    Statement,
+    ForLoopStatement,
+    ReturnStatement,
+    ControlFlowBlock,
+    ConditionStatement,
+    AssignmentStatement,
+
+    // Functions
+    Argument,
+    Arguments,
+    FunctionCall,
+    FunctionDefinition,
+
+    // Token classes
+    Identifier,
+    Keyword,
+    Operator,
+    Literal,
+    Number,
+    Boolean,
+    Lparen,
+    Rparen,
+    LCurly,
+    RCurly,
+    Semi,
+    Assignment,
+    Error,
+}
+
+impl From<&TokenClass> for NodeKind {
+    fn from(value: &TokenClass) -> Self {
+        match value {
+            TokenClass::Identifier => Self::Identifier,
+            TokenClass::Keyword => Self::Keyword,
+            TokenClass::Operator => Self::Operator,
+            TokenClass::Literal => Self::Literal,
+            TokenClass::Number => Self::Number,
+            TokenClass::Boolean => Self::Boolean,
+            TokenClass::Lparen => Self::Lparen,
+            TokenClass::Rparen => Self::Rparen,
+            TokenClass::LCurly => Self::LCurly,
+            TokenClass::RCurly => Self::RCurly,
+            TokenClass::Semi => Self::Semi,
+            TokenClass::Assignment => Self::Assignment,
+            TokenClass::Error => Self::Error,
+        }
+    }
+}
+
+impl From<TokenClass> for NodeKind {
+    fn from(value: TokenClass) -> Self {
+        Self::from(&value)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Loc {
     pub line: usize,
@@ -7,7 +72,7 @@ pub struct Loc {
 #[derive(Debug)]
 pub struct ParseNode {
     pub loc: Loc,
-    pub kind: String,
+    pub kind: NodeKind,
     pub value: Option<String>,
     pub children: Vec<Self>,
 }

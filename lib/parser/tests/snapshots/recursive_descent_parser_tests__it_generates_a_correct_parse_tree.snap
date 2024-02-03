@@ -1,5 +1,5 @@
 ---
-source: lib/parser/tests/integration_tests.rs
+source: lib/parser/tests/recursive_descent_parser_tests.rs
 expression: parser.parse().unwrap()
 ---
 ParseNode {
@@ -7,7 +7,7 @@ ParseNode {
         line: 1,
         column: 1,
     },
-    kind: "Program",
+    kind: Program,
     value: None,
     children: [
         ParseNode {
@@ -15,7 +15,7 @@ ParseNode {
                 line: 1,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -23,7 +23,7 @@ ParseNode {
                         line: 1,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "int",
                     ),
@@ -34,7 +34,7 @@ ParseNode {
                         line: 1,
                         column: 5,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "a",
                     ),
@@ -45,7 +45,7 @@ ParseNode {
                         line: 1,
                         column: 7,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -54,7 +54,7 @@ ParseNode {
                         line: 1,
                         column: 9,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -62,7 +62,7 @@ ParseNode {
                                 line: 1,
                                 column: 9,
                             },
-                            kind: "Number",
+                            kind: Number,
                             value: Some(
                                 "3",
                             ),
@@ -75,7 +75,7 @@ ParseNode {
                         line: 1,
                         column: 10,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -86,7 +86,7 @@ ParseNode {
                 line: 2,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -94,7 +94,7 @@ ParseNode {
                         line: 2,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "int",
                     ),
@@ -105,7 +105,7 @@ ParseNode {
                         line: 2,
                         column: 5,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "b",
                     ),
@@ -116,7 +116,7 @@ ParseNode {
                         line: 2,
                         column: 7,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -125,7 +125,7 @@ ParseNode {
                         line: 2,
                         column: 9,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -133,7 +133,7 @@ ParseNode {
                                 line: 2,
                                 column: 9,
                             },
-                            kind: "Number",
+                            kind: Number,
                             value: Some(
                                 "5",
                             ),
@@ -146,7 +146,7 @@ ParseNode {
                         line: 2,
                         column: 10,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -157,7 +157,7 @@ ParseNode {
                 line: 3,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -165,7 +165,7 @@ ParseNode {
                         line: 3,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "int",
                     ),
@@ -176,7 +176,7 @@ ParseNode {
                         line: 3,
                         column: 5,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "c",
                     ),
@@ -187,7 +187,7 @@ ParseNode {
                         line: 3,
                         column: 7,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -196,7 +196,7 @@ ParseNode {
                         line: 3,
                         column: 9,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -204,7 +204,7 @@ ParseNode {
                                 line: 3,
                                 column: 9,
                             },
-                            kind: "Identifier",
+                            kind: Identifier,
                             value: Some(
                                 "a",
                             ),
@@ -217,7 +217,7 @@ ParseNode {
                         line: 3,
                         column: 10,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -228,7 +228,7 @@ ParseNode {
                 line: 4,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -236,7 +236,7 @@ ParseNode {
                         line: 4,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "bool",
                     ),
@@ -247,7 +247,7 @@ ParseNode {
                         line: 4,
                         column: 6,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "a_bool",
                     ),
@@ -258,7 +258,7 @@ ParseNode {
                         line: 4,
                         column: 13,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -267,7 +267,7 @@ ParseNode {
                         line: 4,
                         column: 15,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -275,7 +275,7 @@ ParseNode {
                                 line: 4,
                                 column: 15,
                             },
-                            kind: "Boolean",
+                            kind: Boolean,
                             value: Some(
                                 "true",
                             ),
@@ -288,7 +288,7 @@ ParseNode {
                         line: 4,
                         column: 19,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -299,7 +299,7 @@ ParseNode {
                 line: 5,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -307,7 +307,7 @@ ParseNode {
                         line: 5,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "bool",
                     ),
@@ -318,7 +318,7 @@ ParseNode {
                         line: 5,
                         column: 6,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "another_bool",
                     ),
@@ -329,7 +329,7 @@ ParseNode {
                         line: 5,
                         column: 19,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -338,7 +338,7 @@ ParseNode {
                         line: 5,
                         column: 21,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -346,7 +346,7 @@ ParseNode {
                                 line: 5,
                                 column: 21,
                             },
-                            kind: "Boolean",
+                            kind: Boolean,
                             value: Some(
                                 "true",
                             ),
@@ -357,7 +357,7 @@ ParseNode {
                                 line: 5,
                                 column: 26,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "&&",
                             ),
@@ -368,7 +368,7 @@ ParseNode {
                                 line: 5,
                                 column: 29,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -376,7 +376,7 @@ ParseNode {
                                         line: 5,
                                         column: 29,
                                     },
-                                    kind: "Boolean",
+                                    kind: Boolean,
                                     value: Some(
                                         "false",
                                     ),
@@ -387,7 +387,7 @@ ParseNode {
                                         line: 5,
                                         column: 35,
                                     },
-                                    kind: "Operator",
+                                    kind: Operator,
                                     value: Some(
                                         "||",
                                     ),
@@ -398,7 +398,7 @@ ParseNode {
                                         line: 5,
                                         column: 38,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -406,7 +406,7 @@ ParseNode {
                                                 line: 5,
                                                 column: 38,
                                             },
-                                            kind: "Boolean",
+                                            kind: Boolean,
                                             value: Some(
                                                 "true",
                                             ),
@@ -417,7 +417,7 @@ ParseNode {
                                                 line: 5,
                                                 column: 43,
                                             },
-                                            kind: "Operator",
+                                            kind: Operator,
                                             value: Some(
                                                 "||",
                                             ),
@@ -428,7 +428,7 @@ ParseNode {
                                                 line: 5,
                                                 column: 46,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -436,7 +436,7 @@ ParseNode {
                                                         line: 5,
                                                         column: 46,
                                                     },
-                                                    kind: "Boolean",
+                                                    kind: Boolean,
                                                     value: Some(
                                                         "false",
                                                     ),
@@ -455,7 +455,7 @@ ParseNode {
                         line: 5,
                         column: 51,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -466,7 +466,7 @@ ParseNode {
                 line: 6,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -474,7 +474,7 @@ ParseNode {
                         line: 6,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "bool",
                     ),
@@ -485,7 +485,7 @@ ParseNode {
                         line: 6,
                         column: 6,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "another_bool_test",
                     ),
@@ -496,7 +496,7 @@ ParseNode {
                         line: 6,
                         column: 24,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -505,7 +505,7 @@ ParseNode {
                         line: 6,
                         column: 26,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -513,7 +513,7 @@ ParseNode {
                                 line: 6,
                                 column: 26,
                             },
-                            kind: "LParen",
+                            kind: Lparen,
                             value: None,
                             children: [],
                         },
@@ -522,7 +522,7 @@ ParseNode {
                                 line: 6,
                                 column: 27,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -530,7 +530,7 @@ ParseNode {
                                         line: 6,
                                         column: 27,
                                     },
-                                    kind: "Number",
+                                    kind: Number,
                                     value: Some(
                                         "1",
                                     ),
@@ -541,7 +541,7 @@ ParseNode {
                                         line: 6,
                                         column: 29,
                                     },
-                                    kind: "Operator",
+                                    kind: Operator,
                                     value: Some(
                                         "+",
                                     ),
@@ -552,7 +552,7 @@ ParseNode {
                                         line: 6,
                                         column: 31,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -560,7 +560,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 31,
                                             },
-                                            kind: "Number",
+                                            kind: Number,
                                             value: Some(
                                                 "2",
                                             ),
@@ -575,7 +575,7 @@ ParseNode {
                                 line: 6,
                                 column: 32,
                             },
-                            kind: "RParen",
+                            kind: Rparen,
                             value: None,
                             children: [],
                         },
@@ -584,7 +584,7 @@ ParseNode {
                                 line: 6,
                                 column: 34,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "&&",
                             ),
@@ -595,7 +595,7 @@ ParseNode {
                                 line: 6,
                                 column: 37,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -603,7 +603,7 @@ ParseNode {
                                         line: 6,
                                         column: 37,
                                     },
-                                    kind: "LParen",
+                                    kind: Lparen,
                                     value: None,
                                     children: [],
                                 },
@@ -612,7 +612,7 @@ ParseNode {
                                         line: 6,
                                         column: 38,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -620,7 +620,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 38,
                                             },
-                                            kind: "LParen",
+                                            kind: Lparen,
                                             value: None,
                                             children: [],
                                         },
@@ -629,7 +629,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 39,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -637,7 +637,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 39,
                                                     },
-                                                    kind: "Number",
+                                                    kind: Number,
                                                     value: Some(
                                                         "4",
                                                     ),
@@ -648,7 +648,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 41,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         "+",
                                                     ),
@@ -659,7 +659,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 43,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -667,7 +667,7 @@ ParseNode {
                                                                 line: 6,
                                                                 column: 43,
                                                             },
-                                                            kind: "Number",
+                                                            kind: Number,
                                                             value: Some(
                                                                 "2",
                                                             ),
@@ -682,7 +682,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 44,
                                             },
-                                            kind: "RParen",
+                                            kind: Rparen,
                                             value: None,
                                             children: [],
                                         },
@@ -691,7 +691,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 46,
                                             },
-                                            kind: "Operator",
+                                            kind: Operator,
                                             value: Some(
                                                 "/",
                                             ),
@@ -702,7 +702,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 48,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -710,7 +710,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 48,
                                                     },
-                                                    kind: "LParen",
+                                                    kind: Lparen,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -719,7 +719,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 49,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -727,7 +727,7 @@ ParseNode {
                                                                 line: 6,
                                                                 column: 49,
                                                             },
-                                                            kind: "Number",
+                                                            kind: Number,
                                                             value: Some(
                                                                 "3",
                                                             ),
@@ -738,7 +738,7 @@ ParseNode {
                                                                 line: 6,
                                                                 column: 51,
                                                             },
-                                                            kind: "Operator",
+                                                            kind: Operator,
                                                             value: Some(
                                                                 "*",
                                                             ),
@@ -749,7 +749,7 @@ ParseNode {
                                                                 line: 6,
                                                                 column: 53,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -757,7 +757,7 @@ ParseNode {
                                                                         line: 6,
                                                                         column: 53,
                                                                     },
-                                                                    kind: "Number",
+                                                                    kind: Number,
                                                                     value: Some(
                                                                         "1",
                                                                     ),
@@ -772,7 +772,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 54,
                                                     },
-                                                    kind: "RParen",
+                                                    kind: Rparen,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -785,7 +785,7 @@ ParseNode {
                                         line: 6,
                                         column: 55,
                                     },
-                                    kind: "RParen",
+                                    kind: Rparen,
                                     value: None,
                                     children: [],
                                 },
@@ -794,7 +794,7 @@ ParseNode {
                                         line: 6,
                                         column: 57,
                                     },
-                                    kind: "Operator",
+                                    kind: Operator,
                                     value: Some(
                                         "||",
                                     ),
@@ -805,7 +805,7 @@ ParseNode {
                                         line: 6,
                                         column: 60,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -813,7 +813,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 60,
                                             },
-                                            kind: "LParen",
+                                            kind: Lparen,
                                             value: None,
                                             children: [],
                                         },
@@ -822,7 +822,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 61,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -830,7 +830,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 61,
                                                     },
-                                                    kind: "Identifier",
+                                                    kind: Identifier,
                                                     value: Some(
                                                         "a",
                                                     ),
@@ -841,7 +841,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 63,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         "+",
                                                     ),
@@ -852,7 +852,7 @@ ParseNode {
                                                         line: 6,
                                                         column: 65,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -860,7 +860,7 @@ ParseNode {
                                                                 line: 6,
                                                                 column: 65,
                                                             },
-                                                            kind: "Identifier",
+                                                            kind: Identifier,
                                                             value: Some(
                                                                 "b",
                                                             ),
@@ -875,7 +875,7 @@ ParseNode {
                                                 line: 6,
                                                 column: 66,
                                             },
-                                            kind: "RParen",
+                                            kind: Rparen,
                                             value: None,
                                             children: [],
                                         },
@@ -890,7 +890,7 @@ ParseNode {
                         line: 6,
                         column: 67,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -901,7 +901,7 @@ ParseNode {
                 line: 7,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -909,7 +909,7 @@ ParseNode {
                         line: 7,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "string",
                     ),
@@ -920,7 +920,7 @@ ParseNode {
                         line: 7,
                         column: 8,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "test",
                     ),
@@ -931,7 +931,7 @@ ParseNode {
                         line: 7,
                         column: 13,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -940,7 +940,7 @@ ParseNode {
                         line: 7,
                         column: 15,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -948,7 +948,7 @@ ParseNode {
                                 line: 7,
                                 column: 15,
                             },
-                            kind: "Literal",
+                            kind: Literal,
                             value: Some(
                                 "Hello there",
                             ),
@@ -959,7 +959,7 @@ ParseNode {
                                 line: 7,
                                 column: 29,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "+",
                             ),
@@ -970,7 +970,7 @@ ParseNode {
                                 line: 7,
                                 column: 31,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -978,7 +978,7 @@ ParseNode {
                                         line: 7,
                                         column: 31,
                                     },
-                                    kind: "Literal",
+                                    kind: Literal,
                                     value: Some(
                                         "Hey brother :wave",
                                     ),
@@ -993,7 +993,7 @@ ParseNode {
                         line: 7,
                         column: 50,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -1004,7 +1004,7 @@ ParseNode {
                 line: 8,
                 column: 1,
             },
-            kind: "AssignmentStatement",
+            kind: AssignmentStatement,
             value: None,
             children: [
                 ParseNode {
@@ -1012,7 +1012,7 @@ ParseNode {
                         line: 8,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "string",
                     ),
@@ -1023,7 +1023,7 @@ ParseNode {
                         line: 8,
                         column: 8,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "testing",
                     ),
@@ -1034,7 +1034,7 @@ ParseNode {
                         line: 8,
                         column: 16,
                     },
-                    kind: "Assignment",
+                    kind: Assignment,
                     value: None,
                     children: [],
                 },
@@ -1043,7 +1043,7 @@ ParseNode {
                         line: 8,
                         column: 18,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -1051,7 +1051,7 @@ ParseNode {
                                 line: 8,
                                 column: 18,
                             },
-                            kind: "Literal",
+                            kind: Literal,
                             value: Some(
                                 "hello world!",
                             ),
@@ -1064,7 +1064,7 @@ ParseNode {
                         line: 8,
                         column: 32,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -1075,7 +1075,7 @@ ParseNode {
                 line: 10,
                 column: 1,
             },
-            kind: "ConditionStatement",
+            kind: ConditionStatement,
             value: None,
             children: [
                 ParseNode {
@@ -1083,7 +1083,7 @@ ParseNode {
                         line: 10,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "if",
                     ),
@@ -1094,7 +1094,7 @@ ParseNode {
                         line: 10,
                         column: 4,
                     },
-                    kind: "ControlFlowBlock",
+                    kind: ControlFlowBlock,
                     value: None,
                     children: [
                         ParseNode {
@@ -1102,7 +1102,7 @@ ParseNode {
                                 line: 10,
                                 column: 4,
                             },
-                            kind: "LParen",
+                            kind: Lparen,
                             value: None,
                             children: [],
                         },
@@ -1111,7 +1111,7 @@ ParseNode {
                                 line: 10,
                                 column: 5,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -1119,7 +1119,7 @@ ParseNode {
                                         line: 10,
                                         column: 5,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "a",
                                     ),
@@ -1130,7 +1130,7 @@ ParseNode {
                                         line: 10,
                                         column: 7,
                                     },
-                                    kind: "Operator",
+                                    kind: Operator,
                                     value: Some(
                                         ">",
                                     ),
@@ -1141,7 +1141,7 @@ ParseNode {
                                         line: 10,
                                         column: 9,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -1149,7 +1149,7 @@ ParseNode {
                                                 line: 10,
                                                 column: 9,
                                             },
-                                            kind: "Identifier",
+                                            kind: Identifier,
                                             value: Some(
                                                 "b",
                                             ),
@@ -1160,7 +1160,7 @@ ParseNode {
                                                 line: 10,
                                                 column: 11,
                                             },
-                                            kind: "Operator",
+                                            kind: Operator,
                                             value: Some(
                                                 "&&",
                                             ),
@@ -1171,7 +1171,7 @@ ParseNode {
                                                 line: 10,
                                                 column: 14,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -1179,7 +1179,7 @@ ParseNode {
                                                         line: 10,
                                                         column: 14,
                                                     },
-                                                    kind: "Identifier",
+                                                    kind: Identifier,
                                                     value: Some(
                                                         "b",
                                                     ),
@@ -1190,7 +1190,7 @@ ParseNode {
                                                         line: 10,
                                                         column: 16,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         "<",
                                                     ),
@@ -1201,7 +1201,7 @@ ParseNode {
                                                         line: 10,
                                                         column: 18,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -1209,7 +1209,7 @@ ParseNode {
                                                                 line: 10,
                                                                 column: 18,
                                                             },
-                                                            kind: "Number",
+                                                            kind: Number,
                                                             value: Some(
                                                                 "4",
                                                             ),
@@ -1228,7 +1228,7 @@ ParseNode {
                                 line: 10,
                                 column: 19,
                             },
-                            kind: "RParen",
+                            kind: Rparen,
                             value: None,
                             children: [],
                         },
@@ -1237,7 +1237,7 @@ ParseNode {
                                 line: 10,
                                 column: 21,
                             },
-                            kind: "Block",
+                            kind: Block,
                             value: None,
                             children: [
                                 ParseNode {
@@ -1245,7 +1245,7 @@ ParseNode {
                                         line: 10,
                                         column: 21,
                                     },
-                                    kind: "LCurly",
+                                    kind: LCurly,
                                     value: None,
                                     children: [],
                                 },
@@ -1254,7 +1254,7 @@ ParseNode {
                                         line: 11,
                                         column: 5,
                                     },
-                                    kind: "AssignmentStatement",
+                                    kind: AssignmentStatement,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -1262,7 +1262,7 @@ ParseNode {
                                                 line: 11,
                                                 column: 5,
                                             },
-                                            kind: "Keyword",
+                                            kind: Keyword,
                                             value: Some(
                                                 "bool",
                                             ),
@@ -1273,7 +1273,7 @@ ParseNode {
                                                 line: 11,
                                                 column: 10,
                                             },
-                                            kind: "Identifier",
+                                            kind: Identifier,
                                             value: Some(
                                                 "condition_bool",
                                             ),
@@ -1284,7 +1284,7 @@ ParseNode {
                                                 line: 11,
                                                 column: 25,
                                             },
-                                            kind: "Assignment",
+                                            kind: Assignment,
                                             value: None,
                                             children: [],
                                         },
@@ -1293,7 +1293,7 @@ ParseNode {
                                                 line: 11,
                                                 column: 27,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -1301,7 +1301,7 @@ ParseNode {
                                                         line: 11,
                                                         column: 27,
                                                     },
-                                                    kind: "Boolean",
+                                                    kind: Boolean,
                                                     value: Some(
                                                         "false",
                                                     ),
@@ -1314,7 +1314,7 @@ ParseNode {
                                                 line: 11,
                                                 column: 32,
                                             },
-                                            kind: "Semi",
+                                            kind: Semi,
                                             value: None,
                                             children: [],
                                         },
@@ -1325,7 +1325,7 @@ ParseNode {
                                         line: 12,
                                         column: 1,
                                     },
-                                    kind: "RCurly",
+                                    kind: RCurly,
                                     value: None,
                                     children: [],
                                 },
@@ -1340,7 +1340,7 @@ ParseNode {
                 line: 14,
                 column: 1,
             },
-            kind: "ConditionStatement",
+            kind: ConditionStatement,
             value: None,
             children: [
                 ParseNode {
@@ -1348,7 +1348,7 @@ ParseNode {
                         line: 14,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "while",
                     ),
@@ -1359,7 +1359,7 @@ ParseNode {
                         line: 14,
                         column: 7,
                     },
-                    kind: "ControlFlowBlock",
+                    kind: ControlFlowBlock,
                     value: None,
                     children: [
                         ParseNode {
@@ -1367,7 +1367,7 @@ ParseNode {
                                 line: 14,
                                 column: 7,
                             },
-                            kind: "LParen",
+                            kind: Lparen,
                             value: None,
                             children: [],
                         },
@@ -1376,7 +1376,7 @@ ParseNode {
                                 line: 14,
                                 column: 8,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -1384,7 +1384,7 @@ ParseNode {
                                         line: 14,
                                         column: 8,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "a",
                                     ),
@@ -1395,7 +1395,7 @@ ParseNode {
                                         line: 14,
                                         column: 10,
                                     },
-                                    kind: "Operator",
+                                    kind: Operator,
                                     value: Some(
                                         ">",
                                     ),
@@ -1406,7 +1406,7 @@ ParseNode {
                                         line: 14,
                                         column: 12,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -1414,7 +1414,7 @@ ParseNode {
                                                 line: 14,
                                                 column: 12,
                                             },
-                                            kind: "Identifier",
+                                            kind: Identifier,
                                             value: Some(
                                                 "b",
                                             ),
@@ -1425,7 +1425,7 @@ ParseNode {
                                                 line: 14,
                                                 column: 14,
                                             },
-                                            kind: "Operator",
+                                            kind: Operator,
                                             value: Some(
                                                 "&&",
                                             ),
@@ -1436,7 +1436,7 @@ ParseNode {
                                                 line: 14,
                                                 column: 17,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -1444,7 +1444,7 @@ ParseNode {
                                                         line: 14,
                                                         column: 17,
                                                     },
-                                                    kind: "Identifier",
+                                                    kind: Identifier,
                                                     value: Some(
                                                         "b",
                                                     ),
@@ -1455,7 +1455,7 @@ ParseNode {
                                                         line: 14,
                                                         column: 19,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         "<",
                                                     ),
@@ -1466,7 +1466,7 @@ ParseNode {
                                                         line: 14,
                                                         column: 21,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -1474,7 +1474,7 @@ ParseNode {
                                                                 line: 14,
                                                                 column: 21,
                                                             },
-                                                            kind: "Number",
+                                                            kind: Number,
                                                             value: Some(
                                                                 "4",
                                                             ),
@@ -1493,7 +1493,7 @@ ParseNode {
                                 line: 14,
                                 column: 22,
                             },
-                            kind: "RParen",
+                            kind: Rparen,
                             value: None,
                             children: [],
                         },
@@ -1502,7 +1502,7 @@ ParseNode {
                                 line: 14,
                                 column: 24,
                             },
-                            kind: "Block",
+                            kind: Block,
                             value: None,
                             children: [
                                 ParseNode {
@@ -1510,7 +1510,7 @@ ParseNode {
                                         line: 14,
                                         column: 24,
                                     },
-                                    kind: "LCurly",
+                                    kind: LCurly,
                                     value: None,
                                     children: [],
                                 },
@@ -1519,7 +1519,7 @@ ParseNode {
                                         line: 15,
                                         column: 5,
                                     },
-                                    kind: "ConditionStatement",
+                                    kind: ConditionStatement,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -1527,7 +1527,7 @@ ParseNode {
                                                 line: 15,
                                                 column: 5,
                                             },
-                                            kind: "Keyword",
+                                            kind: Keyword,
                                             value: Some(
                                                 "if",
                                             ),
@@ -1538,7 +1538,7 @@ ParseNode {
                                                 line: 15,
                                                 column: 8,
                                             },
-                                            kind: "ControlFlowBlock",
+                                            kind: ControlFlowBlock,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -1546,7 +1546,7 @@ ParseNode {
                                                         line: 15,
                                                         column: 8,
                                                     },
-                                                    kind: "LParen",
+                                                    kind: Lparen,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -1555,7 +1555,7 @@ ParseNode {
                                                         line: 15,
                                                         column: 9,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -1563,7 +1563,7 @@ ParseNode {
                                                                 line: 15,
                                                                 column: 9,
                                                             },
-                                                            kind: "Number",
+                                                            kind: Number,
                                                             value: Some(
                                                                 "3",
                                                             ),
@@ -1574,7 +1574,7 @@ ParseNode {
                                                                 line: 15,
                                                                 column: 11,
                                                             },
-                                                            kind: "Operator",
+                                                            kind: Operator,
                                                             value: Some(
                                                                 ">",
                                                             ),
@@ -1585,7 +1585,7 @@ ParseNode {
                                                                 line: 15,
                                                                 column: 13,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -1593,7 +1593,7 @@ ParseNode {
                                                                         line: 15,
                                                                         column: 13,
                                                                     },
-                                                                    kind: "Number",
+                                                                    kind: Number,
                                                                     value: Some(
                                                                         "5",
                                                                     ),
@@ -1608,7 +1608,7 @@ ParseNode {
                                                         line: 15,
                                                         column: 14,
                                                     },
-                                                    kind: "RParen",
+                                                    kind: Rparen,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -1617,7 +1617,7 @@ ParseNode {
                                                         line: 15,
                                                         column: 16,
                                                     },
-                                                    kind: "Block",
+                                                    kind: Block,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -1625,7 +1625,7 @@ ParseNode {
                                                                 line: 15,
                                                                 column: 16,
                                                             },
-                                                            kind: "LCurly",
+                                                            kind: LCurly,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -1634,7 +1634,7 @@ ParseNode {
                                                                 line: 16,
                                                                 column: 9,
                                                             },
-                                                            kind: "FunctionCallStatement",
+                                                            kind: FunctionCall,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -1642,7 +1642,7 @@ ParseNode {
                                                                         line: 16,
                                                                         column: 9,
                                                                     },
-                                                                    kind: "Identifier",
+                                                                    kind: Identifier,
                                                                     value: Some(
                                                                         "System.print",
                                                                     ),
@@ -1653,7 +1653,7 @@ ParseNode {
                                                                         line: 16,
                                                                         column: 21,
                                                                     },
-                                                                    kind: "LParen",
+                                                                    kind: Lparen,
                                                                     value: None,
                                                                     children: [],
                                                                 },
@@ -1662,7 +1662,7 @@ ParseNode {
                                                                         line: 16,
                                                                         column: 22,
                                                                     },
-                                                                    kind: "Expression",
+                                                                    kind: Expression,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -1670,7 +1670,7 @@ ParseNode {
                                                                                 line: 16,
                                                                                 column: 22,
                                                                             },
-                                                                            kind: "Literal",
+                                                                            kind: Literal,
                                                                             value: Some(
                                                                                 "hello there!",
                                                                             ),
@@ -1683,7 +1683,7 @@ ParseNode {
                                                                         line: 16,
                                                                         column: 36,
                                                                     },
-                                                                    kind: "RParen",
+                                                                    kind: Rparen,
                                                                     value: None,
                                                                     children: [],
                                                                 },
@@ -1692,7 +1692,7 @@ ParseNode {
                                                                         line: 16,
                                                                         column: 37,
                                                                     },
-                                                                    kind: "Semi",
+                                                                    kind: Semi,
                                                                     value: None,
                                                                     children: [],
                                                                 },
@@ -1703,7 +1703,7 @@ ParseNode {
                                                                 line: 17,
                                                                 column: 5,
                                                             },
-                                                            kind: "RCurly",
+                                                            kind: RCurly,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -1718,7 +1718,7 @@ ParseNode {
                                         line: 18,
                                         column: 1,
                                     },
-                                    kind: "RCurly",
+                                    kind: RCurly,
                                     value: None,
                                     children: [],
                                 },
@@ -1733,7 +1733,7 @@ ParseNode {
                 line: 20,
                 column: 1,
             },
-            kind: "ForLoopStatement",
+            kind: ForLoopStatement,
             value: None,
             children: [
                 ParseNode {
@@ -1741,7 +1741,7 @@ ParseNode {
                         line: 20,
                         column: 1,
                     },
-                    kind: "Keyword",
+                    kind: Keyword,
                     value: Some(
                         "for",
                     ),
@@ -1752,7 +1752,7 @@ ParseNode {
                         line: 20,
                         column: 5,
                     },
-                    kind: "LParen",
+                    kind: Lparen,
                     value: None,
                     children: [],
                 },
@@ -1761,7 +1761,7 @@ ParseNode {
                         line: 20,
                         column: 6,
                     },
-                    kind: "AssignmentStatement",
+                    kind: AssignmentStatement,
                     value: None,
                     children: [
                         ParseNode {
@@ -1769,7 +1769,7 @@ ParseNode {
                                 line: 20,
                                 column: 6,
                             },
-                            kind: "Keyword",
+                            kind: Keyword,
                             value: Some(
                                 "int",
                             ),
@@ -1780,7 +1780,7 @@ ParseNode {
                                 line: 20,
                                 column: 10,
                             },
-                            kind: "Identifier",
+                            kind: Identifier,
                             value: Some(
                                 "i",
                             ),
@@ -1791,7 +1791,7 @@ ParseNode {
                                 line: 20,
                                 column: 12,
                             },
-                            kind: "Assignment",
+                            kind: Assignment,
                             value: None,
                             children: [],
                         },
@@ -1800,7 +1800,7 @@ ParseNode {
                                 line: 20,
                                 column: 14,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -1808,7 +1808,7 @@ ParseNode {
                                         line: 20,
                                         column: 14,
                                     },
-                                    kind: "Number",
+                                    kind: Number,
                                     value: Some(
                                         "0",
                                     ),
@@ -1821,7 +1821,7 @@ ParseNode {
                                 line: 20,
                                 column: 15,
                             },
-                            kind: "Semi",
+                            kind: Semi,
                             value: None,
                             children: [],
                         },
@@ -1832,7 +1832,7 @@ ParseNode {
                         line: 20,
                         column: 17,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -1840,7 +1840,7 @@ ParseNode {
                                 line: 20,
                                 column: 17,
                             },
-                            kind: "Identifier",
+                            kind: Identifier,
                             value: Some(
                                 "i",
                             ),
@@ -1851,7 +1851,7 @@ ParseNode {
                                 line: 20,
                                 column: 19,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "<",
                             ),
@@ -1862,7 +1862,7 @@ ParseNode {
                                 line: 20,
                                 column: 21,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -1870,7 +1870,7 @@ ParseNode {
                                         line: 20,
                                         column: 21,
                                     },
-                                    kind: "Number",
+                                    kind: Number,
                                     value: Some(
                                         "5",
                                     ),
@@ -1885,7 +1885,7 @@ ParseNode {
                         line: 20,
                         column: 22,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -1894,7 +1894,7 @@ ParseNode {
                         line: 20,
                         column: 24,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -1902,7 +1902,7 @@ ParseNode {
                                 line: 20,
                                 column: 24,
                             },
-                            kind: "Identifier",
+                            kind: Identifier,
                             value: Some(
                                 "i",
                             ),
@@ -1913,7 +1913,7 @@ ParseNode {
                                 line: 20,
                                 column: 26,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "++",
                             ),
@@ -1926,7 +1926,7 @@ ParseNode {
                         line: 20,
                         column: 28,
                     },
-                    kind: "RParen",
+                    kind: Rparen,
                     value: None,
                     children: [],
                 },
@@ -1935,7 +1935,7 @@ ParseNode {
                         line: 20,
                         column: 30,
                     },
-                    kind: "Block",
+                    kind: Block,
                     value: None,
                     children: [
                         ParseNode {
@@ -1943,7 +1943,7 @@ ParseNode {
                                 line: 20,
                                 column: 30,
                             },
-                            kind: "LCurly",
+                            kind: LCurly,
                             value: None,
                             children: [],
                         },
@@ -1952,7 +1952,7 @@ ParseNode {
                                 line: 21,
                                 column: 5,
                             },
-                            kind: "FunctionCallStatement",
+                            kind: FunctionCall,
                             value: None,
                             children: [
                                 ParseNode {
@@ -1960,7 +1960,7 @@ ParseNode {
                                         line: 21,
                                         column: 5,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "System.print",
                                     ),
@@ -1971,7 +1971,7 @@ ParseNode {
                                         line: 21,
                                         column: 17,
                                     },
-                                    kind: "LParen",
+                                    kind: Lparen,
                                     value: None,
                                     children: [],
                                 },
@@ -1980,7 +1980,7 @@ ParseNode {
                                         line: 21,
                                         column: 18,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -1988,7 +1988,7 @@ ParseNode {
                                                 line: 21,
                                                 column: 18,
                                             },
-                                            kind: "Literal",
+                                            kind: Literal,
                                             value: Some(
                                                 "hello there!",
                                             ),
@@ -2001,7 +2001,7 @@ ParseNode {
                                         line: 21,
                                         column: 32,
                                     },
-                                    kind: "RParen",
+                                    kind: Rparen,
                                     value: None,
                                     children: [],
                                 },
@@ -2010,7 +2010,7 @@ ParseNode {
                                         line: 21,
                                         column: 33,
                                     },
-                                    kind: "Semi",
+                                    kind: Semi,
                                     value: None,
                                     children: [],
                                 },
@@ -2021,7 +2021,7 @@ ParseNode {
                                 line: 22,
                                 column: 5,
                             },
-                            kind: "AssignmentStatement",
+                            kind: AssignmentStatement,
                             value: None,
                             children: [
                                 ParseNode {
@@ -2029,7 +2029,7 @@ ParseNode {
                                         line: 22,
                                         column: 5,
                                     },
-                                    kind: "Keyword",
+                                    kind: Keyword,
                                     value: Some(
                                         "int",
                                     ),
@@ -2040,7 +2040,7 @@ ParseNode {
                                         line: 22,
                                         column: 9,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "r",
                                     ),
@@ -2051,7 +2051,7 @@ ParseNode {
                                         line: 22,
                                         column: 11,
                                     },
-                                    kind: "Assignment",
+                                    kind: Assignment,
                                     value: None,
                                     children: [],
                                 },
@@ -2060,7 +2060,7 @@ ParseNode {
                                         line: 22,
                                         column: 13,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -2068,7 +2068,7 @@ ParseNode {
                                                 line: 22,
                                                 column: 13,
                                             },
-                                            kind: "Number",
+                                            kind: Number,
                                             value: Some(
                                                 "3",
                                             ),
@@ -2081,7 +2081,7 @@ ParseNode {
                                         line: 22,
                                         column: 14,
                                     },
-                                    kind: "Semi",
+                                    kind: Semi,
                                     value: None,
                                     children: [],
                                 },
@@ -2092,7 +2092,7 @@ ParseNode {
                                 line: 23,
                                 column: 5,
                             },
-                            kind: "AssignmentStatement",
+                            kind: AssignmentStatement,
                             value: None,
                             children: [
                                 ParseNode {
@@ -2100,7 +2100,7 @@ ParseNode {
                                         line: 23,
                                         column: 5,
                                     },
-                                    kind: "Keyword",
+                                    kind: Keyword,
                                     value: Some(
                                         "int",
                                     ),
@@ -2111,7 +2111,7 @@ ParseNode {
                                         line: 23,
                                         column: 9,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "t",
                                     ),
@@ -2122,7 +2122,7 @@ ParseNode {
                                         line: 23,
                                         column: 11,
                                     },
-                                    kind: "Assignment",
+                                    kind: Assignment,
                                     value: None,
                                     children: [],
                                 },
@@ -2131,7 +2131,7 @@ ParseNode {
                                         line: 23,
                                         column: 13,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -2139,7 +2139,7 @@ ParseNode {
                                                 line: 23,
                                                 column: 13,
                                             },
-                                            kind: "Number",
+                                            kind: Number,
                                             value: Some(
                                                 "5",
                                             ),
@@ -2152,7 +2152,7 @@ ParseNode {
                                         line: 23,
                                         column: 14,
                                     },
-                                    kind: "Semi",
+                                    kind: Semi,
                                     value: None,
                                     children: [],
                                 },
@@ -2163,7 +2163,7 @@ ParseNode {
                                 line: 24,
                                 column: 5,
                             },
-                            kind: "AssignmentStatement",
+                            kind: AssignmentStatement,
                             value: None,
                             children: [
                                 ParseNode {
@@ -2171,7 +2171,7 @@ ParseNode {
                                         line: 24,
                                         column: 5,
                                     },
-                                    kind: "Keyword",
+                                    kind: Keyword,
                                     value: Some(
                                         "int",
                                     ),
@@ -2182,7 +2182,7 @@ ParseNode {
                                         line: 24,
                                         column: 9,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "v",
                                     ),
@@ -2193,7 +2193,7 @@ ParseNode {
                                         line: 24,
                                         column: 11,
                                     },
-                                    kind: "Assignment",
+                                    kind: Assignment,
                                     value: None,
                                     children: [],
                                 },
@@ -2202,7 +2202,7 @@ ParseNode {
                                         line: 24,
                                         column: 13,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -2210,7 +2210,7 @@ ParseNode {
                                                 line: 24,
                                                 column: 13,
                                             },
-                                            kind: "Identifier",
+                                            kind: Identifier,
                                             value: Some(
                                                 "a",
                                             ),
@@ -2223,7 +2223,7 @@ ParseNode {
                                         line: 24,
                                         column: 14,
                                     },
-                                    kind: "Semi",
+                                    kind: Semi,
                                     value: None,
                                     children: [],
                                 },
@@ -2234,7 +2234,7 @@ ParseNode {
                                 line: 25,
                                 column: 5,
                             },
-                            kind: "AssignmentStatement",
+                            kind: AssignmentStatement,
                             value: None,
                             children: [
                                 ParseNode {
@@ -2242,7 +2242,7 @@ ParseNode {
                                         line: 25,
                                         column: 5,
                                     },
-                                    kind: "Keyword",
+                                    kind: Keyword,
                                     value: Some(
                                         "bool",
                                     ),
@@ -2253,7 +2253,7 @@ ParseNode {
                                         line: 25,
                                         column: 10,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "a_test",
                                     ),
@@ -2264,7 +2264,7 @@ ParseNode {
                                         line: 25,
                                         column: 17,
                                     },
-                                    kind: "Assignment",
+                                    kind: Assignment,
                                     value: None,
                                     children: [],
                                 },
@@ -2273,7 +2273,7 @@ ParseNode {
                                         line: 25,
                                         column: 19,
                                     },
-                                    kind: "Expression",
+                                    kind: Expression,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -2281,7 +2281,7 @@ ParseNode {
                                                 line: 25,
                                                 column: 19,
                                             },
-                                            kind: "LParen",
+                                            kind: Lparen,
                                             value: None,
                                             children: [],
                                         },
@@ -2290,7 +2290,7 @@ ParseNode {
                                                 line: 25,
                                                 column: 20,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -2298,7 +2298,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 20,
                                                     },
-                                                    kind: "Number",
+                                                    kind: Number,
                                                     value: Some(
                                                         "1",
                                                     ),
@@ -2309,7 +2309,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 22,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         "+",
                                                     ),
@@ -2320,7 +2320,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 24,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -2328,7 +2328,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 24,
                                                             },
-                                                            kind: "Number",
+                                                            kind: Number,
                                                             value: Some(
                                                                 "2",
                                                             ),
@@ -2343,7 +2343,7 @@ ParseNode {
                                                 line: 25,
                                                 column: 25,
                                             },
-                                            kind: "RParen",
+                                            kind: Rparen,
                                             value: None,
                                             children: [],
                                         },
@@ -2352,7 +2352,7 @@ ParseNode {
                                                 line: 25,
                                                 column: 27,
                                             },
-                                            kind: "Operator",
+                                            kind: Operator,
                                             value: Some(
                                                 "&&",
                                             ),
@@ -2363,7 +2363,7 @@ ParseNode {
                                                 line: 25,
                                                 column: 30,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -2371,7 +2371,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 30,
                                                     },
-                                                    kind: "LParen",
+                                                    kind: Lparen,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -2380,7 +2380,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 31,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -2388,7 +2388,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 31,
                                                             },
-                                                            kind: "LParen",
+                                                            kind: Lparen,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -2397,7 +2397,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 32,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -2405,7 +2405,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 32,
                                                                     },
-                                                                    kind: "Number",
+                                                                    kind: Number,
                                                                     value: Some(
                                                                         "4",
                                                                     ),
@@ -2416,7 +2416,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 34,
                                                                     },
-                                                                    kind: "Operator",
+                                                                    kind: Operator,
                                                                     value: Some(
                                                                         "+",
                                                                     ),
@@ -2427,7 +2427,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 36,
                                                                     },
-                                                                    kind: "Expression",
+                                                                    kind: Expression,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -2435,7 +2435,7 @@ ParseNode {
                                                                                 line: 25,
                                                                                 column: 36,
                                                                             },
-                                                                            kind: "Number",
+                                                                            kind: Number,
                                                                             value: Some(
                                                                                 "2",
                                                                             ),
@@ -2450,7 +2450,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 37,
                                                             },
-                                                            kind: "RParen",
+                                                            kind: Rparen,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -2459,7 +2459,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 39,
                                                             },
-                                                            kind: "Operator",
+                                                            kind: Operator,
                                                             value: Some(
                                                                 "/",
                                                             ),
@@ -2470,7 +2470,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 41,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -2478,7 +2478,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 41,
                                                                     },
-                                                                    kind: "LParen",
+                                                                    kind: Lparen,
                                                                     value: None,
                                                                     children: [],
                                                                 },
@@ -2487,7 +2487,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 42,
                                                                     },
-                                                                    kind: "Expression",
+                                                                    kind: Expression,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -2495,7 +2495,7 @@ ParseNode {
                                                                                 line: 25,
                                                                                 column: 42,
                                                                             },
-                                                                            kind: "Number",
+                                                                            kind: Number,
                                                                             value: Some(
                                                                                 "3",
                                                                             ),
@@ -2506,7 +2506,7 @@ ParseNode {
                                                                                 line: 25,
                                                                                 column: 44,
                                                                             },
-                                                                            kind: "Operator",
+                                                                            kind: Operator,
                                                                             value: Some(
                                                                                 "*",
                                                                             ),
@@ -2517,7 +2517,7 @@ ParseNode {
                                                                                 line: 25,
                                                                                 column: 46,
                                                                             },
-                                                                            kind: "Expression",
+                                                                            kind: Expression,
                                                                             value: None,
                                                                             children: [
                                                                                 ParseNode {
@@ -2525,7 +2525,7 @@ ParseNode {
                                                                                         line: 25,
                                                                                         column: 46,
                                                                                     },
-                                                                                    kind: "Number",
+                                                                                    kind: Number,
                                                                                     value: Some(
                                                                                         "1",
                                                                                     ),
@@ -2540,7 +2540,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 47,
                                                                     },
-                                                                    kind: "RParen",
+                                                                    kind: Rparen,
                                                                     value: None,
                                                                     children: [],
                                                                 },
@@ -2553,7 +2553,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 48,
                                                     },
-                                                    kind: "RParen",
+                                                    kind: Rparen,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -2562,7 +2562,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 50,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         "||",
                                                     ),
@@ -2573,7 +2573,7 @@ ParseNode {
                                                         line: 25,
                                                         column: 53,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -2581,7 +2581,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 53,
                                                             },
-                                                            kind: "LParen",
+                                                            kind: Lparen,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -2590,7 +2590,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 54,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -2598,7 +2598,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 54,
                                                                     },
-                                                                    kind: "Identifier",
+                                                                    kind: Identifier,
                                                                     value: Some(
                                                                         "a",
                                                                     ),
@@ -2609,7 +2609,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 56,
                                                                     },
-                                                                    kind: "Operator",
+                                                                    kind: Operator,
                                                                     value: Some(
                                                                         "+",
                                                                     ),
@@ -2620,7 +2620,7 @@ ParseNode {
                                                                         line: 25,
                                                                         column: 58,
                                                                     },
-                                                                    kind: "Expression",
+                                                                    kind: Expression,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -2628,7 +2628,7 @@ ParseNode {
                                                                                 line: 25,
                                                                                 column: 58,
                                                                             },
-                                                                            kind: "Identifier",
+                                                                            kind: Identifier,
                                                                             value: Some(
                                                                                 "b",
                                                                             ),
@@ -2643,7 +2643,7 @@ ParseNode {
                                                                 line: 25,
                                                                 column: 59,
                                                             },
-                                                            kind: "RParen",
+                                                            kind: Rparen,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -2658,7 +2658,7 @@ ParseNode {
                                         line: 25,
                                         column: 60,
                                     },
-                                    kind: "Semi",
+                                    kind: Semi,
                                     value: None,
                                     children: [],
                                 },
@@ -2669,7 +2669,7 @@ ParseNode {
                                 line: 27,
                                 column: 5,
                             },
-                            kind: "ConditionStatement",
+                            kind: ConditionStatement,
                             value: None,
                             children: [
                                 ParseNode {
@@ -2677,7 +2677,7 @@ ParseNode {
                                         line: 27,
                                         column: 5,
                                     },
-                                    kind: "Keyword",
+                                    kind: Keyword,
                                     value: Some(
                                         "if",
                                     ),
@@ -2688,7 +2688,7 @@ ParseNode {
                                         line: 27,
                                         column: 8,
                                     },
-                                    kind: "ControlFlowBlock",
+                                    kind: ControlFlowBlock,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -2696,7 +2696,7 @@ ParseNode {
                                                 line: 27,
                                                 column: 8,
                                             },
-                                            kind: "LParen",
+                                            kind: Lparen,
                                             value: None,
                                             children: [],
                                         },
@@ -2705,7 +2705,7 @@ ParseNode {
                                                 line: 27,
                                                 column: 9,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -2713,7 +2713,7 @@ ParseNode {
                                                         line: 27,
                                                         column: 9,
                                                     },
-                                                    kind: "Identifier",
+                                                    kind: Identifier,
                                                     value: Some(
                                                         "r",
                                                     ),
@@ -2724,7 +2724,7 @@ ParseNode {
                                                         line: 27,
                                                         column: 11,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         ">",
                                                     ),
@@ -2735,7 +2735,7 @@ ParseNode {
                                                         line: 27,
                                                         column: 13,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -2743,7 +2743,7 @@ ParseNode {
                                                                 line: 27,
                                                                 column: 13,
                                                             },
-                                                            kind: "Identifier",
+                                                            kind: Identifier,
                                                             value: Some(
                                                                 "t",
                                                             ),
@@ -2754,7 +2754,7 @@ ParseNode {
                                                                 line: 27,
                                                                 column: 15,
                                                             },
-                                                            kind: "Operator",
+                                                            kind: Operator,
                                                             value: Some(
                                                                 "&&",
                                                             ),
@@ -2765,7 +2765,7 @@ ParseNode {
                                                                 line: 27,
                                                                 column: 18,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -2773,7 +2773,7 @@ ParseNode {
                                                                         line: 27,
                                                                         column: 18,
                                                                     },
-                                                                    kind: "Identifier",
+                                                                    kind: Identifier,
                                                                     value: Some(
                                                                         "v",
                                                                     ),
@@ -2784,7 +2784,7 @@ ParseNode {
                                                                         line: 27,
                                                                         column: 20,
                                                                     },
-                                                                    kind: "Operator",
+                                                                    kind: Operator,
                                                                     value: Some(
                                                                         "<",
                                                                     ),
@@ -2795,7 +2795,7 @@ ParseNode {
                                                                         line: 27,
                                                                         column: 22,
                                                                     },
-                                                                    kind: "Expression",
+                                                                    kind: Expression,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -2803,7 +2803,7 @@ ParseNode {
                                                                                 line: 27,
                                                                                 column: 22,
                                                                             },
-                                                                            kind: "Number",
+                                                                            kind: Number,
                                                                             value: Some(
                                                                                 "4",
                                                                             ),
@@ -2822,7 +2822,7 @@ ParseNode {
                                                 line: 27,
                                                 column: 23,
                                             },
-                                            kind: "RParen",
+                                            kind: Rparen,
                                             value: None,
                                             children: [],
                                         },
@@ -2831,7 +2831,7 @@ ParseNode {
                                                 line: 27,
                                                 column: 25,
                                             },
-                                            kind: "Block",
+                                            kind: Block,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -2839,7 +2839,7 @@ ParseNode {
                                                         line: 27,
                                                         column: 25,
                                                     },
-                                                    kind: "LCurly",
+                                                    kind: LCurly,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -2848,7 +2848,7 @@ ParseNode {
                                                         line: 28,
                                                         column: 9,
                                                     },
-                                                    kind: "AssignmentStatement",
+                                                    kind: AssignmentStatement,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -2856,7 +2856,7 @@ ParseNode {
                                                                 line: 28,
                                                                 column: 9,
                                                             },
-                                                            kind: "Keyword",
+                                                            kind: Keyword,
                                                             value: Some(
                                                                 "bool",
                                                             ),
@@ -2867,7 +2867,7 @@ ParseNode {
                                                                 line: 28,
                                                                 column: 14,
                                                             },
-                                                            kind: "Identifier",
+                                                            kind: Identifier,
                                                             value: Some(
                                                                 "condition_bool",
                                                             ),
@@ -2878,7 +2878,7 @@ ParseNode {
                                                                 line: 28,
                                                                 column: 29,
                                                             },
-                                                            kind: "Assignment",
+                                                            kind: Assignment,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -2887,7 +2887,7 @@ ParseNode {
                                                                 line: 28,
                                                                 column: 31,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -2895,7 +2895,7 @@ ParseNode {
                                                                         line: 28,
                                                                         column: 31,
                                                                     },
-                                                                    kind: "Boolean",
+                                                                    kind: Boolean,
                                                                     value: Some(
                                                                         "false",
                                                                     ),
@@ -2908,7 +2908,7 @@ ParseNode {
                                                                 line: 28,
                                                                 column: 36,
                                                             },
-                                                            kind: "Semi",
+                                                            kind: Semi,
                                                             value: None,
                                                             children: [],
                                                         },
@@ -2919,7 +2919,7 @@ ParseNode {
                                                         line: 29,
                                                         column: 5,
                                                     },
-                                                    kind: "RCurly",
+                                                    kind: RCurly,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -2934,7 +2934,7 @@ ParseNode {
                                 line: 31,
                                 column: 5,
                             },
-                            kind: "ConditionStatement",
+                            kind: ConditionStatement,
                             value: None,
                             children: [
                                 ParseNode {
@@ -2942,7 +2942,7 @@ ParseNode {
                                         line: 31,
                                         column: 5,
                                     },
-                                    kind: "Keyword",
+                                    kind: Keyword,
                                     value: Some(
                                         "while",
                                     ),
@@ -2953,7 +2953,7 @@ ParseNode {
                                         line: 31,
                                         column: 11,
                                     },
-                                    kind: "ControlFlowBlock",
+                                    kind: ControlFlowBlock,
                                     value: None,
                                     children: [
                                         ParseNode {
@@ -2961,7 +2961,7 @@ ParseNode {
                                                 line: 31,
                                                 column: 11,
                                             },
-                                            kind: "LParen",
+                                            kind: Lparen,
                                             value: None,
                                             children: [],
                                         },
@@ -2970,7 +2970,7 @@ ParseNode {
                                                 line: 31,
                                                 column: 12,
                                             },
-                                            kind: "Expression",
+                                            kind: Expression,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -2978,7 +2978,7 @@ ParseNode {
                                                         line: 31,
                                                         column: 12,
                                                     },
-                                                    kind: "Identifier",
+                                                    kind: Identifier,
                                                     value: Some(
                                                         "r",
                                                     ),
@@ -2989,7 +2989,7 @@ ParseNode {
                                                         line: 31,
                                                         column: 14,
                                                     },
-                                                    kind: "Operator",
+                                                    kind: Operator,
                                                     value: Some(
                                                         ">",
                                                     ),
@@ -3000,7 +3000,7 @@ ParseNode {
                                                         line: 31,
                                                         column: 16,
                                                     },
-                                                    kind: "Expression",
+                                                    kind: Expression,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -3008,7 +3008,7 @@ ParseNode {
                                                                 line: 31,
                                                                 column: 16,
                                                             },
-                                                            kind: "Identifier",
+                                                            kind: Identifier,
                                                             value: Some(
                                                                 "t",
                                                             ),
@@ -3019,7 +3019,7 @@ ParseNode {
                                                                 line: 31,
                                                                 column: 18,
                                                             },
-                                                            kind: "Operator",
+                                                            kind: Operator,
                                                             value: Some(
                                                                 "&&",
                                                             ),
@@ -3030,7 +3030,7 @@ ParseNode {
                                                                 line: 31,
                                                                 column: 21,
                                                             },
-                                                            kind: "Expression",
+                                                            kind: Expression,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -3038,7 +3038,7 @@ ParseNode {
                                                                         line: 31,
                                                                         column: 21,
                                                                     },
-                                                                    kind: "Identifier",
+                                                                    kind: Identifier,
                                                                     value: Some(
                                                                         "v",
                                                                     ),
@@ -3049,7 +3049,7 @@ ParseNode {
                                                                         line: 31,
                                                                         column: 23,
                                                                     },
-                                                                    kind: "Operator",
+                                                                    kind: Operator,
                                                                     value: Some(
                                                                         "<",
                                                                     ),
@@ -3060,7 +3060,7 @@ ParseNode {
                                                                         line: 31,
                                                                         column: 25,
                                                                     },
-                                                                    kind: "Expression",
+                                                                    kind: Expression,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -3068,7 +3068,7 @@ ParseNode {
                                                                                 line: 31,
                                                                                 column: 25,
                                                                             },
-                                                                            kind: "Number",
+                                                                            kind: Number,
                                                                             value: Some(
                                                                                 "4",
                                                                             ),
@@ -3087,7 +3087,7 @@ ParseNode {
                                                 line: 31,
                                                 column: 26,
                                             },
-                                            kind: "RParen",
+                                            kind: Rparen,
                                             value: None,
                                             children: [],
                                         },
@@ -3096,7 +3096,7 @@ ParseNode {
                                                 line: 31,
                                                 column: 28,
                                             },
-                                            kind: "Block",
+                                            kind: Block,
                                             value: None,
                                             children: [
                                                 ParseNode {
@@ -3104,7 +3104,7 @@ ParseNode {
                                                         line: 31,
                                                         column: 28,
                                                     },
-                                                    kind: "LCurly",
+                                                    kind: LCurly,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -3113,7 +3113,7 @@ ParseNode {
                                                         line: 32,
                                                         column: 9,
                                                     },
-                                                    kind: "ConditionStatement",
+                                                    kind: ConditionStatement,
                                                     value: None,
                                                     children: [
                                                         ParseNode {
@@ -3121,7 +3121,7 @@ ParseNode {
                                                                 line: 32,
                                                                 column: 9,
                                                             },
-                                                            kind: "Keyword",
+                                                            kind: Keyword,
                                                             value: Some(
                                                                 "if",
                                                             ),
@@ -3132,7 +3132,7 @@ ParseNode {
                                                                 line: 32,
                                                                 column: 12,
                                                             },
-                                                            kind: "ControlFlowBlock",
+                                                            kind: ControlFlowBlock,
                                                             value: None,
                                                             children: [
                                                                 ParseNode {
@@ -3140,7 +3140,7 @@ ParseNode {
                                                                         line: 32,
                                                                         column: 12,
                                                                     },
-                                                                    kind: "LParen",
+                                                                    kind: Lparen,
                                                                     value: None,
                                                                     children: [],
                                                                 },
@@ -3149,7 +3149,7 @@ ParseNode {
                                                                         line: 32,
                                                                         column: 13,
                                                                     },
-                                                                    kind: "Expression",
+                                                                    kind: Expression,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -3157,7 +3157,7 @@ ParseNode {
                                                                                 line: 32,
                                                                                 column: 13,
                                                                             },
-                                                                            kind: "Number",
+                                                                            kind: Number,
                                                                             value: Some(
                                                                                 "3",
                                                                             ),
@@ -3168,7 +3168,7 @@ ParseNode {
                                                                                 line: 32,
                                                                                 column: 15,
                                                                             },
-                                                                            kind: "Operator",
+                                                                            kind: Operator,
                                                                             value: Some(
                                                                                 ">",
                                                                             ),
@@ -3179,7 +3179,7 @@ ParseNode {
                                                                                 line: 32,
                                                                                 column: 17,
                                                                             },
-                                                                            kind: "Expression",
+                                                                            kind: Expression,
                                                                             value: None,
                                                                             children: [
                                                                                 ParseNode {
@@ -3187,7 +3187,7 @@ ParseNode {
                                                                                         line: 32,
                                                                                         column: 17,
                                                                                     },
-                                                                                    kind: "Number",
+                                                                                    kind: Number,
                                                                                     value: Some(
                                                                                         "5",
                                                                                     ),
@@ -3202,7 +3202,7 @@ ParseNode {
                                                                         line: 32,
                                                                         column: 18,
                                                                     },
-                                                                    kind: "RParen",
+                                                                    kind: Rparen,
                                                                     value: None,
                                                                     children: [],
                                                                 },
@@ -3211,7 +3211,7 @@ ParseNode {
                                                                         line: 32,
                                                                         column: 20,
                                                                     },
-                                                                    kind: "Block",
+                                                                    kind: Block,
                                                                     value: None,
                                                                     children: [
                                                                         ParseNode {
@@ -3219,7 +3219,7 @@ ParseNode {
                                                                                 line: 32,
                                                                                 column: 20,
                                                                             },
-                                                                            kind: "LCurly",
+                                                                            kind: LCurly,
                                                                             value: None,
                                                                             children: [],
                                                                         },
@@ -3228,7 +3228,7 @@ ParseNode {
                                                                                 line: 33,
                                                                                 column: 13,
                                                                             },
-                                                                            kind: "FunctionCallStatement",
+                                                                            kind: FunctionCall,
                                                                             value: None,
                                                                             children: [
                                                                                 ParseNode {
@@ -3236,7 +3236,7 @@ ParseNode {
                                                                                         line: 33,
                                                                                         column: 13,
                                                                                     },
-                                                                                    kind: "Identifier",
+                                                                                    kind: Identifier,
                                                                                     value: Some(
                                                                                         "System.print",
                                                                                     ),
@@ -3247,7 +3247,7 @@ ParseNode {
                                                                                         line: 33,
                                                                                         column: 25,
                                                                                     },
-                                                                                    kind: "LParen",
+                                                                                    kind: Lparen,
                                                                                     value: None,
                                                                                     children: [],
                                                                                 },
@@ -3256,7 +3256,7 @@ ParseNode {
                                                                                         line: 33,
                                                                                         column: 26,
                                                                                     },
-                                                                                    kind: "Expression",
+                                                                                    kind: Expression,
                                                                                     value: None,
                                                                                     children: [
                                                                                         ParseNode {
@@ -3264,7 +3264,7 @@ ParseNode {
                                                                                                 line: 33,
                                                                                                 column: 26,
                                                                                             },
-                                                                                            kind: "Literal",
+                                                                                            kind: Literal,
                                                                                             value: Some(
                                                                                                 "hello there!",
                                                                                             ),
@@ -3277,7 +3277,7 @@ ParseNode {
                                                                                         line: 33,
                                                                                         column: 40,
                                                                                     },
-                                                                                    kind: "RParen",
+                                                                                    kind: Rparen,
                                                                                     value: None,
                                                                                     children: [],
                                                                                 },
@@ -3286,7 +3286,7 @@ ParseNode {
                                                                                         line: 33,
                                                                                         column: 41,
                                                                                     },
-                                                                                    kind: "Semi",
+                                                                                    kind: Semi,
                                                                                     value: None,
                                                                                     children: [],
                                                                                 },
@@ -3297,7 +3297,7 @@ ParseNode {
                                                                                 line: 34,
                                                                                 column: 9,
                                                                             },
-                                                                            kind: "RCurly",
+                                                                            kind: RCurly,
                                                                             value: None,
                                                                             children: [],
                                                                         },
@@ -3312,7 +3312,7 @@ ParseNode {
                                                         line: 35,
                                                         column: 5,
                                                     },
-                                                    kind: "RCurly",
+                                                    kind: RCurly,
                                                     value: None,
                                                     children: [],
                                                 },
@@ -3327,7 +3327,7 @@ ParseNode {
                                 line: 36,
                                 column: 1,
                             },
-                            kind: "RCurly",
+                            kind: RCurly,
                             value: None,
                             children: [],
                         },
@@ -3340,7 +3340,7 @@ ParseNode {
                 line: 38,
                 column: 1,
             },
-            kind: "FunctionCallStatement",
+            kind: FunctionCall,
             value: None,
             children: [
                 ParseNode {
@@ -3348,7 +3348,7 @@ ParseNode {
                         line: 38,
                         column: 1,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "System.print",
                     ),
@@ -3359,7 +3359,7 @@ ParseNode {
                         line: 38,
                         column: 13,
                     },
-                    kind: "LParen",
+                    kind: Lparen,
                     value: None,
                     children: [],
                 },
@@ -3368,7 +3368,7 @@ ParseNode {
                         line: 38,
                         column: 14,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -3376,7 +3376,7 @@ ParseNode {
                                 line: 38,
                                 column: 14,
                             },
-                            kind: "Identifier",
+                            kind: Identifier,
                             value: Some(
                                 "a",
                             ),
@@ -3387,7 +3387,7 @@ ParseNode {
                                 line: 38,
                                 column: 16,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "+",
                             ),
@@ -3398,7 +3398,7 @@ ParseNode {
                                 line: 38,
                                 column: 18,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -3406,7 +3406,7 @@ ParseNode {
                                         line: 38,
                                         column: 18,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "b",
                                     ),
@@ -3421,7 +3421,7 @@ ParseNode {
                         line: 38,
                         column: 19,
                     },
-                    kind: "RParen",
+                    kind: Rparen,
                     value: None,
                     children: [],
                 },
@@ -3430,7 +3430,7 @@ ParseNode {
                         line: 38,
                         column: 20,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -3441,7 +3441,7 @@ ParseNode {
                 line: 39,
                 column: 1,
             },
-            kind: "FunctionCallStatement",
+            kind: FunctionCall,
             value: None,
             children: [
                 ParseNode {
@@ -3449,7 +3449,7 @@ ParseNode {
                         line: 39,
                         column: 1,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "System.print",
                     ),
@@ -3460,7 +3460,7 @@ ParseNode {
                         line: 39,
                         column: 13,
                     },
-                    kind: "LParen",
+                    kind: Lparen,
                     value: None,
                     children: [],
                 },
@@ -3469,7 +3469,7 @@ ParseNode {
                         line: 39,
                         column: 14,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -3477,7 +3477,7 @@ ParseNode {
                                 line: 39,
                                 column: 14,
                             },
-                            kind: "Identifier",
+                            kind: Identifier,
                             value: Some(
                                 "c",
                             ),
@@ -3488,7 +3488,7 @@ ParseNode {
                                 line: 39,
                                 column: 16,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "&&",
                             ),
@@ -3499,7 +3499,7 @@ ParseNode {
                                 line: 39,
                                 column: 19,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -3507,7 +3507,7 @@ ParseNode {
                                         line: 39,
                                         column: 19,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "testing",
                                     ),
@@ -3522,7 +3522,7 @@ ParseNode {
                         line: 39,
                         column: 26,
                     },
-                    kind: "RParen",
+                    kind: Rparen,
                     value: None,
                     children: [],
                 },
@@ -3531,7 +3531,7 @@ ParseNode {
                         line: 39,
                         column: 27,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },
@@ -3542,7 +3542,7 @@ ParseNode {
                 line: 40,
                 column: 1,
             },
-            kind: "FunctionCallStatement",
+            kind: FunctionCall,
             value: None,
             children: [
                 ParseNode {
@@ -3550,7 +3550,7 @@ ParseNode {
                         line: 40,
                         column: 1,
                     },
-                    kind: "Identifier",
+                    kind: Identifier,
                     value: Some(
                         "System.print",
                     ),
@@ -3561,7 +3561,7 @@ ParseNode {
                         line: 40,
                         column: 13,
                     },
-                    kind: "LParen",
+                    kind: Lparen,
                     value: None,
                     children: [],
                 },
@@ -3570,7 +3570,7 @@ ParseNode {
                         line: 40,
                         column: 14,
                     },
-                    kind: "Expression",
+                    kind: Expression,
                     value: None,
                     children: [
                         ParseNode {
@@ -3578,7 +3578,7 @@ ParseNode {
                                 line: 40,
                                 column: 14,
                             },
-                            kind: "Identifier",
+                            kind: Identifier,
                             value: Some(
                                 "c",
                             ),
@@ -3589,7 +3589,7 @@ ParseNode {
                                 line: 40,
                                 column: 16,
                             },
-                            kind: "Operator",
+                            kind: Operator,
                             value: Some(
                                 "||",
                             ),
@@ -3600,7 +3600,7 @@ ParseNode {
                                 line: 40,
                                 column: 19,
                             },
-                            kind: "Expression",
+                            kind: Expression,
                             value: None,
                             children: [
                                 ParseNode {
@@ -3608,7 +3608,7 @@ ParseNode {
                                         line: 40,
                                         column: 19,
                                     },
-                                    kind: "Identifier",
+                                    kind: Identifier,
                                     value: Some(
                                         "testing",
                                     ),
@@ -3623,7 +3623,7 @@ ParseNode {
                         line: 40,
                         column: 26,
                     },
-                    kind: "RParen",
+                    kind: Rparen,
                     value: None,
                     children: [],
                 },
@@ -3632,7 +3632,7 @@ ParseNode {
                         line: 40,
                         column: 27,
                     },
-                    kind: "Semi",
+                    kind: Semi,
                     value: None,
                     children: [],
                 },

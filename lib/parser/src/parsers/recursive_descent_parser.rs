@@ -1,4 +1,4 @@
-use crate::parse_node::{Loc, ParseNode};
+use crate::parse_node::{Loc, NodeKind, ParseNode};
 use lexer::{
     lexer::Lexer,
     operator::Operator,
@@ -33,7 +33,7 @@ impl RecursiveDescentParser {
                         column: token_info.start_column,
                     },
                     value: token_info.token.extract_value(),
-                    kind: token.to_string(),
+                    kind: token.into(),
                     children: vec![],
                 });
             }
@@ -87,7 +87,7 @@ impl RecursiveDescentParser {
                     column: token_info.start_column,
                 },
                 value: token_info.token.extract_value(),
-                kind: token_info.token.to_token_class().to_string(),
+                kind: token_info.token.to_token_class().into(),
                 children: vec![],
             })
         } else {
@@ -139,7 +139,7 @@ impl RecursiveDescentParser {
     fn parse_expression(&mut self) -> ParserResult {
         let mut expression = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "Expression".to_owned(),
+            kind: NodeKind::Expression,
             value: None,
             children: vec![],
         };
@@ -173,7 +173,7 @@ impl RecursiveDescentParser {
     fn parse_block(&mut self) -> ParserResult {
         let mut block = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "Block".to_owned(),
+            kind: NodeKind::Block,
             value: None,
             children: vec![],
         };
@@ -192,7 +192,7 @@ impl RecursiveDescentParser {
     fn parse_control_flow_block(&mut self) -> ParserResult {
         let mut block = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "ControlFlowBlock".to_owned(),
+            kind: NodeKind::ControlFlowBlock,
             value: None,
             children: vec![],
         };
@@ -208,7 +208,7 @@ impl RecursiveDescentParser {
     fn parse_for_loop_statement(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "ForLoopStatement".to_owned(),
+            kind: NodeKind::ForLoopStatement,
             value: None,
             children: vec![],
         };
@@ -228,7 +228,7 @@ impl RecursiveDescentParser {
     fn parse_condition_statement(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "ConditionStatement".to_owned(),
+            kind: NodeKind::ConditionStatement,
             value: None,
             children: vec![],
         };
@@ -242,7 +242,7 @@ impl RecursiveDescentParser {
     fn parse_assignment_statement(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "AssignmentStatement".to_owned(),
+            kind: NodeKind::AssignmentStatement,
             value: None,
             children: vec![],
         };
@@ -263,7 +263,7 @@ impl RecursiveDescentParser {
     fn parse_argument(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "Argument".to_owned(),
+            kind: NodeKind::Argument,
             value: None,
             children: vec![],
         };
@@ -277,7 +277,7 @@ impl RecursiveDescentParser {
     fn parse_arguments(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "Arguments".to_owned(),
+            kind: NodeKind::Arguments,
             value: None,
             children: vec![],
         };
@@ -296,7 +296,7 @@ impl RecursiveDescentParser {
     fn parse_function_definition(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "FunctionDefinition".to_owned(),
+            kind: NodeKind::FunctionDefinition,
             value: None,
             children: vec![],
         };
@@ -314,7 +314,7 @@ impl RecursiveDescentParser {
     fn parse_return_statement(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "ReturnStatement".to_owned(),
+            kind: NodeKind::ReturnStatement,
             value: None,
             children: vec![],
         };
@@ -356,7 +356,7 @@ impl RecursiveDescentParser {
     fn parse_function_call_statement(&mut self) -> ParserResult {
         let mut statement = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "FunctionCallStatement".to_owned(),
+            kind: NodeKind::FunctionCall,
             value: None,
             children: vec![],
         };
@@ -381,7 +381,7 @@ impl RecursiveDescentParser {
     fn parse_program(&mut self) -> ParserResult {
         let mut root = ParseNode {
             loc: Loc { line: 1, column: 1 },
-            kind: "Program".to_owned(),
+            kind: NodeKind::Program,
             value: None,
             children: vec![],
         };

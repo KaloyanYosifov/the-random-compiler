@@ -17,5 +17,6 @@ thiserror = { workspace = true }
 [workspace.dependencies]
 thiserror = "1.0.56"
 rstest = "0.18.2"
+strum = { version = "0.26.1", features = ["derive"] }
 lexer = { path = "./lib/lexer" }
 

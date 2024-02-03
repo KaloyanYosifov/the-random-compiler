@@ -1,13 +1,14 @@
 use crate::operator::Operator;
 use regex::Regex;
 use std::fmt::Display;
+use strum::Display as StrumDisplay;
 
 const KEYWORDS: &'static [&str] = &[
     "if", "elif", "else", "while", "for", "return", "continue", "break", "int", "bool", "string",
     "char", "float", "fn"
 ];
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, StrumDisplay)]
 pub enum TokenClass {
     Identifier,
     Keyword,
@@ -22,28 +23,6 @@ pub enum TokenClass {
     Semi,
     Assignment,
     Error,
-}
-
-impl Display for TokenClass {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let value = match self {
-            Self::Identifier => "Identifier",
-            Self::Boolean => "Boolean",
-            Self::Keyword => "Keyword",
-            Self::Operator => "Operator",
-            Self::Literal => "Literal",
-            Self::Number => "Number",
-            Self::Lparen => "LParen",
-            Self::Rparen => "RParen",
-            Self::LCurly => "LCurly",
-            Self::RCurly => "RCurly",
-            Self::Semi => "Semi",
-            Self::Assignment => "Assignment",
-            Self::Error => "Error",
-        }.to_string();
-
-        write!(f, "{}", value)
-    }
 }
 
 #[derive(PartialEq, Eq, Debug)]
