@@ -1,5 +1,5 @@
 use lexer::lexer::Lexer;
-use parser::Parser;
+use parser::parsers::RecursiveDescentParser;
 
 #[test]
 fn test_it_generates_a_correct_parse_tree() {
@@ -7,7 +7,7 @@ fn test_it_generates_a_correct_parse_tree() {
     current_dir.push("test-files/main.cc");
 
     let lexer = Lexer::from_file(current_dir.to_str().unwrap()).unwrap();
-    let mut parser = Parser::new(lexer);
+    let mut parser = RecursiveDescentParser::new(lexer);
 
     insta::assert_debug_snapshot!(parser.parse().unwrap());
 }
