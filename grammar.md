@@ -1,42 +1,33 @@
 ```
-P -> (S)+
-S -> A
-   | V(E)
-   | Q 
-   | F
-   | D
+P -> S
+S -> A S'
+   | V(E) S'
+   | Q S' 
+   | F S'
+   | D S'
+S' -> S 
+   | ε
 Q -> K(E){S}
 A -> KV=E;
 F -> for(AE;E){S} 
 D -> fn V((KV)*){S}
-E -> I+E
-   | I*E
-   | I/E
-   | I-E
-   | I==E 
-   | I>=E 
-   | I<=E 
-   | I!=E 
-   | I>E 
-   | I<E 
-   | I&&E
-   | I||E
-   | (E)
-   | (E)+E
-   | (E)*E
-   | (E)/E
-   | (E)-E
-   | (E)==E
-   | (E)>=E
-   | (E)<=E
-   | (E)!=E
-   | (E)>E
-   | (E)<E
-   | (E)&&E
-   | (E)||E
+E -> IE'
    | I++
    | I--
-   | I
+E' -> +E
+   | *E
+   | /E
+   | -E
+   | ==E 
+   | >=E 
+   | <=E 
+   | !=E 
+   | >E 
+   | <E 
+   | &&E
+   | ||E
+   | (E)
+   | ε
 V -> id(.id)*
 L -> ".*"
 B -> true
