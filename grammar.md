@@ -6,6 +6,7 @@ S -> A
 Q -> K(E){S}
 A -> KV=E
 F -> for(A;E;E){S} 
+D -> fn V((KV)*){S}
 E -> I+E
    | I*E
    | I/E
