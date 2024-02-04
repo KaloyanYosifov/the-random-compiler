@@ -1,11 +1,13 @@
 ```
-P -> S
+P -> (S)+
 S -> A
    | V(E)
    | Q 
+   | F
+   | D
 Q -> K(E){S}
-A -> KV=E
-F -> for(A;E;E){S} 
+A -> KV=E;
+F -> for(AE;E){S} 
 D -> fn V((KV)*){S}
 E -> I+E
    | I*E
@@ -49,9 +51,42 @@ K -> int
    | char
    | if
    | elif
-   | for
+   | else
    | continue
    | string
    | bool
    | float
 ```
+
+## Parser with PDA (Push down automata)
+
+Where keyword = int, char, if, elif, continue, else, string, bool, float 
+Where digit = 0-9 
+
+First(P) = keyword, id 
+First(S) = keyword, id
+First(Q) = keyword
+First(A) = keyword
+First(F) = for
+First(D) = fn
+First(E) = id, digit, true, false, ", (
+First(V) = id
+First(L) = "
+First(B) = true, false
+First(I) = id, digit, true, false, "
+First(N) = digit
+First(K) = keyword
+
+Follow(P) = $
+Follow(S) = $, }, keyword, id, fn, for
+Follow(Q) = $, }, keyword, id, fn, for
+Follow(A) = $, }, keyword, id, fn, for
+Follow(F) = $, }, keyword, id, fn, for
+Follow(D) = $, }, keyword, id, fn, for
+Follow(E) = ), ;
+Follow(V) = =, (, ), +, *, /, -, ==, >=, <=, !=, >, <, &&, ||, ++, --
+Follow(L) = +, *, /, -, ==, >=, <=, !=, >, <, &&, ||, ++, --
+Follow(B) = +, *, /, -, ==, >=, <=, !=, >, <, &&, ||, ++, --
+Follow(I) = +, *, /, -, ==, >=, <=, !=, >, <, &&, ||, ++, --
+Follow(N) = +, *, /, -, ==, >=, <=, !=, >, <, &&, ||, ++, --
+Follow(K) = (, id
