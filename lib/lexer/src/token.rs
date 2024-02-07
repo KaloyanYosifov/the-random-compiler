@@ -3,12 +3,12 @@ use regex::Regex;
 use std::fmt::Display;
 use strum::Display as StrumDisplay;
 
-const KEYWORDS: &'static [&str] = &[
+pub const KEYWORDS: &'static [&str] = &[
     "if", "elif", "else", "while", "for", "return", "continue", "break", "int", "bool", "string",
     "char", "float", "fn"
 ];
 
-#[derive(PartialEq, Eq, Debug, StrumDisplay)]
+#[derive(PartialEq, Eq, Debug, StrumDisplay, Hash)]
 pub enum TokenClass {
     Identifier,
     Keyword,
@@ -25,7 +25,7 @@ pub enum TokenClass {
     Error,
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Hash)]
 pub enum Token {
     Identifier(String),
     Keyword(String),

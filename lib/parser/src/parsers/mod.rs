@@ -2,6 +2,7 @@ use crate::parse_node::ParseNode;
 use lexer::lexer::LexerError;
 use thiserror::Error as ThisError;
 
+mod push_down_automata_predictive_parser;
 mod recursive_descent_parser;
 
 pub use recursive_descent_parser::RecursiveDescentParser;
