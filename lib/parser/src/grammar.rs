@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use strum::{Display, EnumString};
 
 #[derive(PartialEq, Eq, Hash, EnumString, Display)]
-pub enum Terminal {
+pub enum NonTerminal {
     #[strum(serialize = "P")]
     Program,
     #[strum(serialize = "S")]
@@ -18,16 +18,16 @@ pub enum Terminal {
 
 pub enum ProductionRuleSymbol {
     Token(Token),
-    Terminal(Terminal),
+    NonTerminal(NonTerminal),
     TokenClass(TokenClass),
 }
 
 pub type ProductionRule = Vec<ProductionRuleSymbol>;
 pub type ProductionRules = Vec<ProductionRule>;
-pub type GrammarTable = HashMap<Terminal, ProductionRules>;
+pub type GrammarTable = HashMap<NonTerminal, ProductionRules>;
 
 pub struct Grammar {
-    grammar: HashMap<Terminal, ProductionRules>,
+    grammar: HashMap<NonTerminal, ProductionRules>,
 }
 
 impl Grammar {
@@ -41,23 +41,23 @@ impl Grammar {
 
     pub fn init_program_production_rules(table: &mut GrammarTable) {
         table.insert(
-            Terminal::Program,
-            vec![vec![ProductionRuleSymbol::Terminal(Terminal::Statement)]],
+            NonTerminal::Program,
+            vec![vec![ProductionRuleSymbol::NonTerminal(NonTerminal::Statement)]],
         );
     }
 
     pub fn init_statement_production_rules(table: &mut GrammarTable) {
         table.insert(
-            Terminal::Statement,
+            NonTerminal::Statement,
             vec![vec![
-                ProductionRuleSymbol::Terminal(Terminal::AssignmentStatement),
-                ProductionRuleSymbol::Terminal(Terminal::StatementPrime),
+                ProductionRuleSymbol::NonTerminal(NonTerminal::AssignmentStatement),
+                ProductionRuleSymbol::NonTerminal(NonTerminal::StatementPrime),
             ]],
         );
     }
 
     pub fn init_assignment_statement_production_rules(table: &mut GrammarTable) {
-        table.insert(Terminal::AssignmentStatement, vec![vec![]]);
+        table.insert(NonTerminal::AssignmentStatement, vec![vec![]]);
     }
 
     pub fn init_keyword_production_rules(table: &mut GrammarTable) {
@@ -70,6 +70,6 @@ impl Grammar {
             })
             .collect();
 
-        table.insert(Terminal::Keyword, production_rules);
+        table.insert(NonTerminal::Keyword, production_rules);
     }
 }
