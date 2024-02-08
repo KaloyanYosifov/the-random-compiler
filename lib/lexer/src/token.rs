@@ -8,7 +8,7 @@ pub const KEYWORDS: &'static [&str] = &[
     "char", "float", "fn"
 ];
 
-#[derive(PartialEq, Eq, Debug, StrumDisplay, Hash)]
+#[derive(PartialEq, Eq, Debug, StrumDisplay, Hash, Clone)]
 pub enum TokenClass {
     Identifier,
     Keyword,

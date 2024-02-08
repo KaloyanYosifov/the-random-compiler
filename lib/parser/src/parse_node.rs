@@ -22,46 +22,18 @@ pub enum NodeKind {
     FunctionDefinition,
 
     // Token classes
-    Identifier,
-    Keyword,
-    Operator,
-    Literal,
-    Number,
-    Boolean,
-    Lparen,
-    Rparen,
-    LCurly,
-    RCurly,
-    Semi,
-    Comma,
-    Assignment,
-    Error,
+    TokenClass(TokenClass),
 }
 
 impl From<&TokenClass> for NodeKind {
-    fn from(value: &TokenClass) -> Self {
-        match value {
-            TokenClass::Identifier => Self::Identifier,
-            TokenClass::Keyword => Self::Keyword,
-            TokenClass::Operator => Self::Operator,
-            TokenClass::Literal => Self::Literal,
-            TokenClass::Number => Self::Number,
-            TokenClass::Boolean => Self::Boolean,
-            TokenClass::Lparen => Self::Lparen,
-            TokenClass::Rparen => Self::Rparen,
-            TokenClass::LCurly => Self::LCurly,
-            TokenClass::RCurly => Self::RCurly,
-            TokenClass::Semi => Self::Semi,
-            TokenClass::Comma => Self::Comma,
-            TokenClass::Assignment => Self::Assignment,
-            TokenClass::Error => Self::Error,
-        }
+    fn from(token_class: &TokenClass) -> Self {
+        Self::TokenClass(token_class.clone())
     }
 }
 
 impl From<TokenClass> for NodeKind {
-    fn from(value: TokenClass) -> Self {
-        Self::from(&value)
+    fn from(token_class: TokenClass) -> Self {
+        Self::TokenClass(token_class)
     }
 }
 
@@ -94,11 +66,15 @@ impl ParseNode {
 
     fn inner_print_tree(&self, padding: i32) {
         let pad_str: String = (0..padding).map(|_| " ").collect();
+        let kind = match &self.kind {
+            NodeKind::TokenClass(tk) => tk.to_string(),
+            v => v.to_string(),
+        };
 
         if let Some(value) = &self.value {
-            println!("{}{}: {}", pad_str, self.kind, value);
+            println!("{}{}: {}", pad_str, kind, value);
         } else {
-            println!("{}{}", pad_str, self.kind);
+            println!("{}{}", pad_str, kind);
         }
 
         for child in &self.children {
