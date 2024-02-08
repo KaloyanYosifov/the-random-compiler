@@ -21,6 +21,7 @@ pub enum TokenClass {
     LCurly,
     RCurly,
     Semi,
+    Comma,
     Assignment,
     Error,
 }
@@ -38,6 +39,7 @@ pub enum Token {
     LCurly,
     RCurly,
     Semi,
+    Comma,
     Assignment,
     Error(String),
 }
@@ -45,7 +47,7 @@ pub enum Token {
 impl Token {
     pub fn is_special_char(char: char) -> bool {
         match char {
-            ';' | '(' | ')' | '{' | '}' | '=' => true,
+            ';' | '(' | ')' | '{' | '}' | '=' | ',' => true,
             _ => false,
         }
     }
@@ -95,6 +97,7 @@ impl Token {
             Self::LCurly => TokenClass::LCurly,
             Self::RCurly => TokenClass::RCurly,
             Self::Semi => TokenClass::Semi,
+            Self::Comma => TokenClass::Comma,
             Self::Assignment => TokenClass::Assignment,
             Self::Error(_) => TokenClass::Error,
         }
@@ -135,6 +138,7 @@ impl Display for Token {
             Self::LCurly => "{".to_owned(),
             Self::RCurly => "}".to_owned(),
             Self::Semi => ";".to_owned(),
+            Self::Comma => ",".to_owned(),
             Self::Assignment => "=".to_owned(),
             Self::Error(error) => format!("Failed to convert to token: {}", error),
         };
@@ -153,6 +157,7 @@ impl From<char> for Token {
             '{' => Self::LCurly,
             '}' => Self::RCurly,
             '=' => Self::Assignment,
+            ',' => Self::Comma,
             _ => Self::Error(format!(
                 "Failed to parse character to a token: {}",
                 c.to_string()

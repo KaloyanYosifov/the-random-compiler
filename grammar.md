@@ -9,8 +9,12 @@ S' -> S
    | ε
 Q -> K(E){S}
 A -> KV=E;
-F -> for(AE;E){S} 
-D -> fn V((KV)*){S}
+F -> for(A E;E){S} 
+D -> fn V(KV){S}
+R -> K V R' 
+   | ε 
+R' -> , R
+   | ε 
 E -> IE'
    | I++
    | I--

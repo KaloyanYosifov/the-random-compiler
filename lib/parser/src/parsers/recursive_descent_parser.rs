@@ -286,6 +286,11 @@ impl RecursiveDescentParser {
 
         while !self.is_next(&TokenClass::Rparen) {
             statement.add_child(self.parse_argument()?);
+
+            // if the next character is not a ), then we have more arguments
+            if !self.is_next(&TokenClass::Rparen) {
+                statement.add_child(self.eat(&TokenClass::Comma)?);
+            }
         }
 
         statement.add_child(self.eat(&TokenClass::Rparen)?);

@@ -33,6 +33,7 @@ pub enum NodeKind {
     LCurly,
     RCurly,
     Semi,
+    Comma,
     Assignment,
     Error,
 }
@@ -51,6 +52,7 @@ impl From<&TokenClass> for NodeKind {
             TokenClass::LCurly => Self::LCurly,
             TokenClass::RCurly => Self::RCurly,
             TokenClass::Semi => Self::Semi,
+            TokenClass::Comma => Self::Comma,
             TokenClass::Assignment => Self::Assignment,
             TokenClass::Error => Self::Error,
         }
